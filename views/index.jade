@@ -1,27 +1,5 @@
-doctype html
-html
-	head
-		title= "Real time web chat - Extended"
-		link(rel="stylesheet", href="css/style.css")
-		script(src='http://cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js')
-		script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
-		script(src="js/chat.js")
-		script(src="js/drawing.js")
-	body
+extends layout
 
-		div#cursors
-		
-		div#paintarea
-			canvas#paper Your browser needs to support canvas for this to work!
-		hgroup#instructions
-			h1 Draw anywhere!
-			h2 You will see everyone else who's doing the same
-			h3 Tip: If the canvas gets messy, just refresh the page		
-
-		div#chatarea
-		div.controls
-			span Name:
-			input#name
-			br
-			input#field
-			input#send(type='button', value='send')
+block content
+	canvas(id="draw")
+	script(type="text/paperscript", src="javascripts/draw.js", canvas="draw")
