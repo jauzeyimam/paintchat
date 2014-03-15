@@ -4,14 +4,14 @@ function addMessage(msg, pseudo) {
 }
 function sentMessage() {
     // console.log("sending message");
-    if ($('#messageInput').val() != "") 
+    if ($('#messageInput').val() != "")
     {
         io.emit('message', $('#messageInput').val());
         addMessage($('#messageInput').val(), "Me", new Date().toISOString(), true);
         $('#messageInput').val('');
     }
 }
-function setPseudo() {
+/*function setPseudo(name) {
     // console.log("setting pseudo");
     if ($("#pseudoInput").val() != "")
     {
@@ -20,7 +20,17 @@ function setPseudo() {
         $('#pseudoInput').hide();
         $('#pseudoSet').hide();
     }
-}
+}*/
+
+io.on('connect', function(){
+    io.emit('setPseudo', prompt("Name?"));
+    $('#chatControls').show();
+    $('#pseudoInput').hide();
+    $('#pseudoSet').hide();
+    io.emit('setRoom', prompt("Room?"));
+});
+
+
 io.on('message', function(data) {
     // console.log("message added");
     addMessage(data['message'], data['pseudo']);

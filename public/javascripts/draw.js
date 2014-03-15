@@ -2,12 +2,11 @@
 var myPath;
 var otherPath = new Path();		//used for paths from other users
 var canvas = document.getElementById("draw");
-// var minx = canvas.offsetLeft;
 var maxx = canvas.offsetWidth;
-// var miny = canvas.offsetTop;
 var maxy = canvas.offsetHeight;
 paper.view.viewSize = [maxx,maxy];	//Makes the input area same size as the canvas
-// console.log("min->max x,y: ",minx,maxx,miny,maxy);
+console.log("max x " + maxx + " max y " + maxy);
+// console.log("min->max x,y: ",minx,maxx,miny,maxy);*/
 
 function onMouseDown(event) {
 	myPath = new Path();
@@ -15,10 +14,9 @@ function onMouseDown(event) {
 }
 
 function onMouseDrag(event) {
-	
 	if(myPath != null)
 	{
-		myPath.add(event.point); 
+		myPath.add(event.point);
 		emitPoint(event.point);
 	}
 }
@@ -49,14 +47,13 @@ function endPath() {
 function drawPath(data){
 	var path = new Path(data.datapath);
 	path.strokeColor = data.color;
-	// console.log("path : ", path);
+	//console.log("path : ", path);
 	view.draw();
 }
 // Returns an object specifying a semi-random color
 // The color will always have a red value of 0
 // and will be semi-transparent (the alpha value)
 function randomColor() {
-    
     return {
         red: Math.random(),
         green: Math.random(),
@@ -70,7 +67,7 @@ function emitPoint(point)
 	var sessionId = io.socket.sessionid;
 	var data = {x:point.x, y:point.y, color:myPath.strokeColor};
 	io.emit('addPoint',data,sessionId);
-	// console.log('emitting ',data);
+	//console.log('emitting ',data);
 }
 //This functions sends a path to other users
 function emitPath(path){
@@ -84,6 +81,7 @@ function emitEndPath() {
 	var sessionId = io.socket.sessionid;
 	io.emit( 'endPath', sessionId )
 }
+
 io.on('addPoint',function(data) {
 	// console.log('addPoint event recieved: ', data)
 	addPoint(data);
