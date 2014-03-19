@@ -1,42 +1,49 @@
 body {
-	width:100%;
-	height:100%;
+	/*width:100%;*/
+	/*height:100%;*/
  	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-a {
+/*a {
  	color: #00B7FF;
-}
+*/}
 
 p {
 	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 #paintarea{
-	width:80%;
-	height:100%;
-	margin: 0 0 0 0;
+	/*width:80%;*/
+	/*height:100%;*/
+	/*margin: 0 0 0 0;*/
 	border: solid 1px #999;
-	display: inline-block;
-	float:left;
+	/*display: inline-block;*/
+	/*float:left;*/
 }
 
 #chatarea{
-	width:19%;
-	height: 100%;
-	margin: 0 0 0 0;
+	/*width:19%;*/
+	/*height: 100%;*/
+	/*margin: 0 0 0 0;*/
+	height:500px;
 	border: solid 1px #999;
-	overflow-y: scroll;
+	/*overflow-y: scroll;*/
+	/*word-wrap:break-word;*/
+	/*display: inline-block;*/
+	/*float:right;*/
+}
+
+#chatmessages {
+	height:390px;
+	overflow-y:scroll;
 	word-wrap:break-word;
-	display: inline-block;
-	float:right;
 }
 
 canvas{
-	width:80%;
-	height:100%;
-	margin: 0 0 0 0;
+	/*width:80%;*/
+	/*height:100%;*/
+	/*margin: 0 0 0 0;*/
 	border: solid 1px #999;
-	display: inline-block;
-	float:left;
+	/*display: inline-block;*/
+	/*float:left;*/
 }
