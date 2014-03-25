@@ -2,10 +2,10 @@
 function addMessage(msg, pseudo) {
     $("#chatEntries").append('<div class="message"><p>' + pseudo + ' : ' + msg + '</p></div>');
 }
+
 function sentMessage() {
     // console.log("sending message");
-    if ($('#messageInput').val() != "")
-    {
+    if ($('#messageInput').val() != "") {
         io.emit('message', $('#messageInput').val());
         addMessage($('#messageInput').val(), "Me", new Date().toISOString(), true);
         $('#messageInput').val('');
@@ -22,7 +22,8 @@ function sentMessage() {
     }
 }*/
 
-io.on('connect', function(){
+io.on('connect', function() {
+    //Temporarily commented out to make editing home page less annoying :P 
     io.emit('setPseudo', prompt("Name?"));
     $('#chatControls').show();
     $('#pseudoInput').hide();
@@ -38,6 +39,10 @@ io.on('message', function(data) {
 $(function() {
     // console.log("intializing...");
     $("#chatControls").hide();
-    $("#pseudoSet").click(function() {setPseudo()});
-    $("#submit").click(function() {sentMessage();});
+    $("#pseudoSet").click(function() {
+        setPseudo()
+    });
+    $("#submit").click(function() {
+        sentMessage();
+    });
 });

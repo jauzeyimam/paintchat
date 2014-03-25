@@ -8,15 +8,36 @@ html
 		script(src="/javascripts/paper.js")
 		script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js")
 		script(src="/javascripts/script.js")
+		//- Bootstrap stuff
+		<!-- Latest compiled and minified CSS -->
+		link(rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css")
+		<!-- Latest compiled and minified JavaScript -->
+		script(src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js")
 	body
-		#chatarea
+		nav.navbar.navbar-inverse.navbar-default.navbar-fixed-top(role="navigation")
 			div.container
-				header
-					h3 Chat
-				input(type='text')#pseudoInput
-				button#pseudoSet Set Pseudo
-				div#chatEntries
-				div#chatControls
-					input(type='text')#messageInput
-					button#submit Send
+				<!-- Brand and toggle get grouped for better mobile display -->
+				div.navbar-header
+					button.navbar-toggle(type="button", data-toggle="collapse",data-target="#bs-example-navbar-collapse-1")
+						span.sr-only Toggle navigation
+						span.icon-bar
+						span.icon-bar
+						span.icon-bar
+					a.navbar-brand(href="/") PaintChat
+
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				div#bs-example-navbar-collapse-1.collapse.navbar-collapse
+					ul.nav.navbar-nav.navbar-left
+						li.active
+							a(href="#linkone") Link One
+						li
+							a(href="#linktwo") Link Two
+						li
+							a(href="#linkthree") Link Three	
+					ul.nav.navbar-nav.navbar-right
+						li
+							a(href="#changepseudo") Change Psuedo
+						li
+							a(href="#changeroom") Change Room
+		div.row#separator(style="width: 100%; height:75px;")
 		block content

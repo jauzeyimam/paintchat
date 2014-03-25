@@ -1,5 +1,17 @@
 extends layout
 
 block content
-	canvas(id="draw")
+	div.container
+		div.col-md-9
+			canvas(id="draw" style="width:100%; height:500px;")
+		div.col-md-3#chatarea
+			div.row#chatheader(style="height: 55px; border-bottom:1px solid black;")
+				h3 Chat
+			div.row#chatmessages
+				input(type='text')#pseudoInput
+				button#pseudoSet Set Pseudo
+				div#chatEntries
+			div#chatControls
+				input(type='text')#messageInput
+				button#submit Send
 	script(type="text/paperscript", src="javascripts/draw.js", canvas="draw")
