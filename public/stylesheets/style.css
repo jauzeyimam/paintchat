@@ -1,49 +1,34 @@
 body {
-	/*width:100%;*/
-	/*height:100%;*/
  	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
-
-/*a {
- 	color: #00B7FF;
-*/}
 
 p {
 	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 #paintarea{
-	/*width:80%;*/
-	/*height:100%;*/
-	/*margin: 0 0 0 0;*/
 	border: solid 1px #999;
-	/*display: inline-block;*/
-	/*float:left;*/
 }
 
 #chatarea{
-	/*width:19%;*/
-	/*height: 100%;*/
-	/*margin: 0 0 0 0;*/
 	height:500px;
 	border: solid 1px #999;
-	/*overflow-y: scroll;*/
-	/*word-wrap:break-word;*/
-	/*display: inline-block;*/
-	/*float:right;*/
 }
 
 #chatmessages {
 	height:390px;
-	overflow-y:scroll;
+	overflow-y:auto;
 	word-wrap:break-word;
 }
 
 canvas{
-	/*width:80%;*/
-	/*height:100%;*/
-	/*margin: 0 0 0 0;*/
 	border: solid 1px #999;
-	/*display: inline-block;*/
-	/*float:left;*/
+}
+
+.shadowed{
+	box-shadow: 3px 3px 15px #888888;
+}
+
+.shadowed-light{
+	box-shadow: 1px 1px 5px #888888;
 }

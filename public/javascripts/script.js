@@ -1,6 +1,8 @@
 // var socket = io.connect();
 function addMessage(msg, pseudo) {
     $("#chatEntries").append('<div class="message"><p>' + pseudo + ' : ' + msg + '</p></div>');
+    var s = document.getElementById('chatmessages').scrollHeight;
+    $('#chatmessages').scrollTop(s);
 }
 
 function sentMessage() {
@@ -44,5 +46,12 @@ $(function() {
     });
     $("#submit").click(function() {
         sentMessage();
+    });
+});
+$(document).ready(function() {
+    $("#messageInput").keyup(function(e) {
+        if (e.keyCode == 13) {
+            sentMessage();
+        }
     });
 });

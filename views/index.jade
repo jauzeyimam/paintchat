@@ -3,8 +3,8 @@ extends layout
 block content
 	div.container
 		div.col-md-9
-			canvas(id="draw" style="width:100%; height:500px;")
-		div.col-md-3#chatarea
+			canvas#draw.shadowed-light(style="width:100%; height:500px;")
+		div.col-md-3#chatarea.shadowed-light
 			div.row#chatheader(style="height: 55px; border-bottom:1px solid black;")
 				h3 Chat
 			div.row#chatmessages
