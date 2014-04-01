@@ -1,100 +1,184 @@
 /**Javascript file conrolling drawing on canvas**/
-var myPath;
-var otherPath = new Path();		//used for paths from other users
-var canvas = document.getElementById("draw");
-var maxx = canvas.offsetWidth;
-var maxy = canvas.offsetHeight;
-paper.view.viewSize = [maxx,maxy];	//Makes the input area same size as the canvas
-console.log("max x " + maxx + " max y " + maxy);
-// console.log("min->max x,y: ",minx,maxx,miny,maxy);*/
+var canvas = document.getElementById("draw"); // Canvas element
+paper.view.viewSize = [canvas.offsetWidth,canvas.offsetHeight];	//Makes the input area same size as the canvas
 
-function onMouseDown(event) {
+/**Path Variables***/
+var myPath;						//Current path being drawn by this user
+var otherPath = new Path();		//Used for drawing paths from other users
+
+var startPoint;					//Starting point of a path - used to draw lines
+
+/***Drawing Tools****/
+var freeDraw = new Tool();
+var lineDraw = new Tool();
+
+/********Free Draw Functions**********/
+function activateFreeDraw(){
+	freeDraw.activate();
+}
+freeDraw.onMouseDown = function(event) {
 	myPath = new Path();
 	myPath.strokeColor = randomColor();
 }
-
-function onMouseDrag(event) {
+freeDraw.onMouseDrag = function(event) {
+	
 	if(myPath != null)
 	{
-		myPath.add(event.point);
+		myPath.add(event.point); 
 		emitPoint(event.point);
 	}
 }
-
-/**Changing the commented lines in this function can
-switch from emitting point by point to emitting the
-whole path at once**/
-function onMouseUp(event) {
-	// console.log("Event: ",event.point.x,event.point.y);
+freeDraw.onMouseUp = function(event) {
 	emitEndPath();
-	// emitPath(myPath);
+	// emitPath(myPath); //To prevent other users from seeing incomplete paths uncomment this line, emitPath, and drawPath functions
 	myPath = null;
 }
 
-function addPoint(data)
+/**********Line Draw Functions*********/
+function activateLineDraw(){
+	lineDraw.activate();
+}
+$(function() {
+    $("#chatControls").hide();
+    $("#pseudoSet").click(function() {setPseudo()});
+    $("#submit").click(function() {sentMessage();});
+});
+lineDraw.onMouseDown = function(event) {
+	myPath = new Path.Line();
+	myPath.from = event.point;
+	startPoint = event.point;
+	myPath.strokeColor = randomColor();
+	view.draw();
+	myPath.removeOnDrag();
+}
+lineDraw.onMouseDrag = function(event) {
+	
+	if(myPath != null)
+	{
+		myPath.remove
+		myPath = new Path.Line(startPoint,event.point);
+		myPath.strokeColor = randomColor();//myPath.strokeColor;
+		view.draw();
+		myPath.removeOnDrag();
+	}
+}
+function onMouseUp(event) {
+	myPath = new Path.Line(startPoint,event.point);
+	myPath.strokeColor = randomColor();
+	emitEndPath();
+	view.draw();
+	myPath = null;
+}
+
+/*****Resize Function*********/
+function onResize(event) {
+	paper.view.viewSize = [canvas.offsetWidth,canvas.offsetHeight];
+}
+/*-----Save Canvas---------
+* Saves the canvas as an image
+* automatically downloads as .png
+*/
+function saveCanvas()
 {
-	point = new Point(data.x, data.y);
-	// console.log(point);
-	otherPath.strokeColor = data.color
-	otherPath.add(point);
-	view.draw();
+	var saveImage = document.getElementById("saveImage");
+	saveImage.src = canvas.toDataURL();
+	document.getElementById("save").href = saveImage.src;
+
 }
-//End a path
-function endPath() {
-	otherPath = new Path();
-}
-//Draw a path
-function drawPath(data){
-	var path = new Path(data.datapath);
-	path.strokeColor = data.color;
-	//console.log("path : ", path);
-	view.draw();
-}
-// Returns an object specifying a semi-random color
-// The color will always have a red value of 0
-// and will be semi-transparent (the alpha value)
+
+
+/*-----randomColor--------
+* generates a random color
+* will always be opaque
+*/
 function randomColor() {
+    
     return {
         red: Math.random(),
         green: Math.random(),
         blue: Math.random(),
-        alpha: 1 //( Math.random() * 0.25 ) + 0.05
+        alpha: 1
     };
 }
 
+/*****Processing Other Users Path*******/
+
+/*-------------addPoint-----------------
+* adds a point received from other users
+* to the otherPath global path
+* BUG: if two other users are drawing at
+* the same time!!
+*/
+function addPoint(data)
+{
+	point = new Point(data.x, data.y);
+	otherPath.strokeColor = data.color
+	otherPath.add(point);
+	view.draw();
+}
+/*--------endPath--------
+* invoked when another user is done
+* drawing their path
+*/
+function endPath() {
+	otherPath = new Path();
+}
+/*-------------drawPath-----------------
+* Unused function from old implementation
+* used to draw another users complete path
+*/
+function drawPath(data){
+	var path = new Path(data.datapath);
+	path.strokeColor = data.color;
+	view.draw();
+}
+
+/*********Sending this Users Path***********/
+
+/* --------emitPoint-----------
+* used to send the last point of a path
+* to the other users. Also sends the color.
+*/
 function emitPoint(point)
 {
 	var sessionId = io.socket.sessionid;
 	var data = {x:point.x, y:point.y, color:myPath.strokeColor};
 	io.emit('addPoint',data,sessionId);
-	//console.log('emitting ',data);
 }
-//This functions sends a path to other users
+
+/* ---------emitPath--------------
+* used to send an entier path to other
+* users. Also sends the color.
+*/
 function emitPath(path){
 	var sessionId = io.socket.sessionid;
 	data = {datapath: path.pathData, color:path.strokeColor};
 	io.emit('drawPath',data,sessionId);
-	// console.log('emitting ', data);
 }
-//This function just tells other users that a path is completed
+
+/*------------emitEndPath-------------
+* tell other users that a path has been
+* completed.
+*/
 function emitEndPath() {
 	var sessionId = io.socket.sessionid;
 	io.emit( 'endPath', sessionId )
 }
 
+/******Socket.io Code*********/
 io.on('addPoint',function(data) {
-	// console.log('addPoint event recieved: ', data)
 	addPoint(data);
 })
-// Listen for 'drawPath' events
-// created by other users
 io.on( 'drawPath', function(data) {
-	// console.log('Path Received');
 	drawPath(data);
 })
-// Listen for 'endPath' events
-// created by other users
 io.on( 'endPath', function( data ) {
-    // console.log( 'Path Complete');
 	endPath();
+});
+
+/*-------Map Buttons to Functions----------*/
+$(function() {
+    $("#freeDraw").click(function() {activateFreeDraw()});
+    $("#lineDraw").click(function() {activateLineDraw();});
+    $("#save").click(function() {saveCanvas();});
 });
