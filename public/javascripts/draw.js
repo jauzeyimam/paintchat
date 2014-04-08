@@ -19,17 +19,21 @@ function activateFreeDraw(){
 freeDraw.onMouseDown = function(event) {
 	myPath = new Path();
 	myPath.strokeColor = randomColor();
+	emitPath(myPath);
 }
 freeDraw.onMouseDrag = function(event) {
 	
 	if(myPath != null)
 	{
-		myPath.add(event.point); 
-		emitPoint(event.point);
+		//emitPoint(event.point);
+		emitRemovePath(myPath);
+		myPath.add(event.point);
+		emitPath(myPath); 
+		view.draw();
 	}
 }
 freeDraw.onMouseUp = function(event) {
-	emitEndPath();
+	// emitEndPath();
 	// emitPath(myPath); //To prevent other users from seeing incomplete paths uncomment this line, emitPath, and drawPath functions
 	myPath = null;
 }
@@ -44,8 +48,7 @@ lineDraw.onMouseDown = function(event) {
 	myPath.from = event.point;
 	startPoint = event.point;
 	myPath.strokeColor = randomColor();
-	// emitPath(myPath);
-	emitTempPathRefactored(myPath);
+	emitPath(myPath);
 	view.draw();
 }
 lineDraw.onMouseDrag = function(event) {
@@ -54,25 +57,14 @@ lineDraw.onMouseDrag = function(event) {
 	{
 		var color = myPath.strokeColor;
 		emitRemovePath(myPath);
-		myPath.remove();;
+		myPath.remove();
 		myPath = new Path.Line(startPoint,event.point);
 		myPath.strokeColor = color;
+		emitPath(myPath);
 		view.draw();
-		// emitPath(myPath);
-		emitTempPathRefactored(myPath);
 	}
 }
 lineDraw.onMouseUp = function(event) {
-	// var color = myPath.strokeColor;
-	// emitRemovePath(myPath.id);
-	// console.log(project.activeLayer.children[project.activeLayer.children.length-1]);
-	// myPath.remove();
-	// myPath = new Path.Line(startPoint,event.point);
-	// myPath.strokeColor = color;
-	// emitPath(myPath);
-	// view.draw();
-	// console.log(project.activeLayer.children[project.activeLayer.children.length-1]);
-	// console.log("Last Path drawn: ", myPath.id);
 	myPath = null;
 }
 
@@ -163,36 +155,24 @@ function endPath() {
 	otherPath = new Path();
 }
 /*-------------drawPath-----------------
-* Unused function from old implementation
-* used to draw another users complete path
+* Draws a path and updates the lastPaths 
+* array to hold that path in the users
+* slot
 */
 function drawPath(data){
-	var path = new Path(data.datapath);
-	path.strokeColor = data.color;
-	view.draw();
-}
-function drawTempPathRefactored(data){
-	// var path = new Path(data.datapath);
-	// path.strokeColor = data.color;
 	lastPaths[data.user]= new Path(data.datapath);
 	lastPaths[data.user].strokeColor = data.color;
 	view.draw();
-	console.log("Last Paths: ", lastPaths);
-
 }
 
-/*INCOMPLETE!!***/
+/*------------removePath---------------
+* Cycles through lastPaths array and removes
+* the last path drawn by the user
+*/
 function removePath(user){
-	// console.log("Removing Path",id);
-	// for(var i=0;i<project.activeLayer.children.length;i++){
-	// 	if(project.activeLayer.children[i].id == id){
-	// 		console.log("Path Removed ID: ",id);
-	// 		project.activeLayer.children[i].remove();
-	// 	}
-	// }
 	for(key in lastPaths)
 	{
-		if(key == user)	//Does this work for Strings?
+		if(key == user)
 		{
 			lastPaths[key].remove();
 		} 
@@ -218,7 +198,7 @@ function emitPoint(point)
 */
 function emitPath(path){
 	var sessionId = io.socket.sessionid;
-	data = {datapath: path.pathData, color:path.strokeColor};
+	data = {datapath: path.pathData, color:path.strokeColor, user:sessionId};
 	io.emit('drawPath',data,sessionId);
 }
 
@@ -239,18 +219,6 @@ function emitRemovePath(path){
 	io.emit('removePath',data,sessionId)
 }
 
-/*******Refactoring Path Emission 4/2*********/
-function emitTempPathRefactored(path) {
-	var sessionId = io.socket.sessionid;
-	data = {datapath: path.pathData, color:path.strokeColor, user:sessionId};
-	io.emit('drawTempPathRefactored',data,sessionId);
-}
-
-function emitCompletePathRefactored(path) {
-	var sessionId = io.socket.sessionid;
-	data = {datapath: path.pathData, color:path.strokeColor, id:sessionId};
-	io.emit('drawCompletePathRefactored',data,sessionId);
-}
 /******Socket.io Code*********/
 io.on('addPoint',function(data) {
 	addPoint(data);
@@ -264,9 +232,7 @@ io.on( 'endPath', function( data ) {
 io.on('removePath',function(data){
 	removePath(data.user);
 });
-io.on('drawTempPathRefactored', function(data){
-	drawTempPathRefactored(data);
-});
+
 /*-------Map Buttons to Functions----------*/
 $(function() {
     $("#freeDraw").click(function() {activateFreeDraw()});
