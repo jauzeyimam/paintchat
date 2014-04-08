@@ -47,15 +47,17 @@ io.sockets.on('connection', function(socket) {
     socket.on('setPseudo', function(data) {
         socket.set('pseudo', data);
         socket.username = data;
+        console.log('Pseudo: ', data);
     });
     socket.on('setRoom', function(room) {
         socket.room = room;
         socket.join(room);
         var data = {
-            'message': "Joined room" + room,
+            'message': "Joined room " + room,
             pseudo: "Server"
         };
         socket.emit('message', data);
+        console.log("Room: ", room);
     });
     socket.on('message', function(message) {
         socket.get('pseudo', function(error, name) {
