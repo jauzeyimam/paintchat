@@ -69,7 +69,7 @@ io.sockets.on('connection', function(socket) {
     });
     /******Draw Functions********/
     socket.on('endPath', function(data, session) {
-        console.log("session " + session + " completed path:");
+        // console.log("session " + session + " completed path:");
         socket.broadcast.to(socket.room).emit('endPath');
     })
     socket.on('addPoint', function(data, session) {
@@ -81,5 +81,8 @@ io.sockets.on('connection', function(socket) {
         //console.log("session " + session + " drew:");
         //console.log(data);
         socket.broadcast.to(socket.room).emit('drawPath', data);
+    })
+    socket.on('removePath', function(data, session) {
+        socket.broadcast.to(socket.room).emit('removePath', data);
     })
 });

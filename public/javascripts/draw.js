@@ -5,7 +5,6 @@ paper.view.viewSize = [canvas.offsetWidth,canvas.offsetHeight];	//Makes the inpu
 /**Path Variables***/
 var myPath;						//Current path being drawn by this user
 var otherPath = new Path();		//Used for drawing paths from other users
-
 var startPoint;					//Starting point of a path - used to draw lines
 
 /***Drawing Tools****/
@@ -38,35 +37,38 @@ freeDraw.onMouseUp = function(event) {
 function activateLineDraw(){
 	lineDraw.activate();
 }
-$(function() {
-    $("#chatControls").hide();
-    $("#pseudoSet").click(function() {setPseudo()});
-    $("#submit").click(function() {sentMessage();});
-});
+
 lineDraw.onMouseDown = function(event) {
 	myPath = new Path.Line();
 	myPath.from = event.point;
 	startPoint = event.point;
 	myPath.strokeColor = randomColor();
+	emitPath(myPath);
 	view.draw();
-	myPath.removeOnDrag();
 }
 lineDraw.onMouseDrag = function(event) {
 	
 	if(myPath != null)
 	{
-		myPath.remove
+		var color = myPath.strokeColor;
+		emitRemovePath(myPath);
+		removePath(myPath.id);
 		myPath = new Path.Line(startPoint,event.point);
-		myPath.strokeColor = randomColor();//myPath.strokeColor;
+		myPath.strokeColor = color;
 		view.draw();
-		myPath.removeOnDrag();
+		emitPath(myPath);
 	}
 }
-function onMouseUp(event) {
+lineDraw.onMouseUp = function(event) {
+	var color = myPath.strokeColor;
+	// emitRemovePath(myPath.id);
+	console.log(project.activeLayer.children[project.activeLayer.children.length-1]);
+	myPath.remove();
 	myPath = new Path.Line(startPoint,event.point);
-	myPath.strokeColor = randomColor();
-	emitEndPath();
+	myPath.strokeColor = color;
+	emitPath(myPath);
 	view.draw();
+	console.log("Last Path drawn: ", myPath.id);
 	myPath = null;
 }
 
@@ -74,16 +76,49 @@ function onMouseUp(event) {
 function onResize(event) {
 	paper.view.viewSize = [canvas.offsetWidth,canvas.offsetHeight];
 }
+
 /*-----Save Canvas---------
 * Saves the canvas as an image
 * automatically downloads as .png
 */
 function saveCanvas()
 {
-	var saveImage = document.getElementById("saveImage");
-	saveImage.src = canvas.toDataURL();
-	document.getElementById("save").href = saveImage.src;
+	//cache height and width        
+    var w = canvas.width;
+    var h = canvas.height;
+    var context = canvas.getContext('2d');
+    var data;       
 
+    //get the current ImageData for the canvas.
+    data = context.getImageData(0, 0, w, h);
+
+    //store the current globalCompositeOperation
+    var compositeOperation = context.globalCompositeOperation;
+
+    //set to draw behind current content
+    context.globalCompositeOperation = "destination-over";
+
+    //set background color
+    context.fillStyle = 'white';
+
+    //draw background / rect on entire canvas
+    context.fillRect(0,0,w,h);
+
+    //get the image data from the canvas
+    var imageData = canvas.toDataURL("image/png");
+
+    //clear the canvas
+    context.clearRect (0,0,w,h);
+
+    //restore it with original / cached ImageData
+    context.putImageData(data, 0,0);        
+
+    //reset the globalCompositeOperation to what it was
+    context.globalCompositeOperation = compositeOperation;
+
+    var saveImage = document.getElementById("saveImage");
+	saveImage.src = imageData;
+	document.getElementById("save").href = saveImage.src;
 }
 
 
@@ -131,6 +166,18 @@ function drawPath(data){
 	var path = new Path(data.datapath);
 	path.strokeColor = data.color;
 	view.draw();
+	console.log(project.activeLayer.lastChild);
+}
+
+/*INCOMPLETE!!***/
+function removePath(id){
+	console.log("Removing Path",id);
+	for(var i=0;i<project.activeLayer.children.length;i++){
+		if(project.activeLayer.children[i].id == id){
+			console.log("Path Removed ID: ",id);
+			project.activeLayer.children[i].remove();
+		}
+	}
 }
 
 /*********Sending this Users Path***********/
@@ -162,9 +209,30 @@ function emitPath(path){
 */
 function emitEndPath() {
 	var sessionId = io.socket.sessionid;
-	io.emit( 'endPath', sessionId )
+	io.emit('endPath',sessionId);
+}
+/*----------emitRemovePath--------------
+* tell other users to remove a path
+*/
+function emitRemovePath(path){
+	var sessionId = io.socket.sessionid;
+	var data = {id:path.id};
+	console.log(path.id);
+	io.emit('removePath',data,sessionId)
 }
 
+/*******Refactoring Path Emission 4/2*********/
+function emitTempPathRefactored(path) {
+	var sessionId = io.socket.sessionid;
+	data = {datapath: path.pathData, color:path.strokeColor, id:sessionId};
+	io.emit('drawTempPathRefactored',data,sessionId);
+}
+
+function emitCompletePathRefactored(path) {
+	var sessionId = io.socket.sessionid;
+	data = {datapath: path.pathData, color:path.strokeColor, id:sessionId};
+	io.emit('drawCompletePathRefactored',data,sessionId);
+}
 /******Socket.io Code*********/
 io.on('addPoint',function(data) {
 	addPoint(data);
@@ -175,7 +243,9 @@ io.on( 'drawPath', function(data) {
 io.on( 'endPath', function( data ) {
 	endPath();
 });
-
+io.on('removePath',function(data){
+	removePath(data.id);
+});
 /*-------Map Buttons to Functions----------*/
 $(function() {
     $("#freeDraw").click(function() {activateFreeDraw()});

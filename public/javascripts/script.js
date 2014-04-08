@@ -26,11 +26,11 @@ function sentMessage() {
 
 io.on('connect', function() {
     //Temporarily commented out to make editing home page less annoying :P 
-    io.emit('setPseudo', prompt("Name?"));
+    // io.emit('setPseudo', prompt("Name?"));
     $('#chatControls').show();
     $('#pseudoInput').hide();
     $('#pseudoSet').hide();
-    io.emit('setRoom', prompt("Room?"));
+    // io.emit('setRoom', prompt("Room?"));
 });
 
 
