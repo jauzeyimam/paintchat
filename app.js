@@ -85,4 +85,7 @@ io.sockets.on('connection', function(socket) {
     socket.on('removePath', function(data, session) {
         socket.broadcast.to(socket.room).emit('removePath', data);
     })
+    socket.on('drawTempPathRefactored', function(data, session) {
+        socket.broadcast.to(socket.room).emit('drawTempPathRefactored', data);
+    })
 });

@@ -6,6 +6,7 @@ paper.view.viewSize = [canvas.offsetWidth,canvas.offsetHeight];	//Makes the inpu
 var myPath;						//Current path being drawn by this user
 var otherPath = new Path();		//Used for drawing paths from other users
 var startPoint;					//Starting point of a path - used to draw lines
+var lastPaths = {};				//Map for every other users last path drawn
 
 /***Drawing Tools****/
 var freeDraw = new Tool();
@@ -43,7 +44,8 @@ lineDraw.onMouseDown = function(event) {
 	myPath.from = event.point;
 	startPoint = event.point;
 	myPath.strokeColor = randomColor();
-	emitPath(myPath);
+	// emitPath(myPath);
+	emitTempPathRefactored(myPath);
 	view.draw();
 }
 lineDraw.onMouseDrag = function(event) {
@@ -52,23 +54,25 @@ lineDraw.onMouseDrag = function(event) {
 	{
 		var color = myPath.strokeColor;
 		emitRemovePath(myPath);
-		removePath(myPath.id);
+		myPath.remove();;
 		myPath = new Path.Line(startPoint,event.point);
 		myPath.strokeColor = color;
 		view.draw();
-		emitPath(myPath);
+		// emitPath(myPath);
+		emitTempPathRefactored(myPath);
 	}
 }
 lineDraw.onMouseUp = function(event) {
-	var color = myPath.strokeColor;
+	// var color = myPath.strokeColor;
 	// emitRemovePath(myPath.id);
-	console.log(project.activeLayer.children[project.activeLayer.children.length-1]);
-	myPath.remove();
-	myPath = new Path.Line(startPoint,event.point);
-	myPath.strokeColor = color;
-	emitPath(myPath);
-	view.draw();
-	console.log("Last Path drawn: ", myPath.id);
+	// console.log(project.activeLayer.children[project.activeLayer.children.length-1]);
+	// myPath.remove();
+	// myPath = new Path.Line(startPoint,event.point);
+	// myPath.strokeColor = color;
+	// emitPath(myPath);
+	// view.draw();
+	// console.log(project.activeLayer.children[project.activeLayer.children.length-1]);
+	// console.log("Last Path drawn: ", myPath.id);
 	myPath = null;
 }
 
@@ -166,17 +170,32 @@ function drawPath(data){
 	var path = new Path(data.datapath);
 	path.strokeColor = data.color;
 	view.draw();
-	console.log(project.activeLayer.lastChild);
+}
+function drawTempPathRefactored(data){
+	// var path = new Path(data.datapath);
+	// path.strokeColor = data.color;
+	lastPaths[data.user]= new Path(data.datapath);
+	lastPaths[data.user].strokeColor = data.color;
+	view.draw();
+	console.log("Last Paths: ", lastPaths);
+
 }
 
 /*INCOMPLETE!!***/
-function removePath(id){
-	console.log("Removing Path",id);
-	for(var i=0;i<project.activeLayer.children.length;i++){
-		if(project.activeLayer.children[i].id == id){
-			console.log("Path Removed ID: ",id);
-			project.activeLayer.children[i].remove();
-		}
+function removePath(user){
+	// console.log("Removing Path",id);
+	// for(var i=0;i<project.activeLayer.children.length;i++){
+	// 	if(project.activeLayer.children[i].id == id){
+	// 		console.log("Path Removed ID: ",id);
+	// 		project.activeLayer.children[i].remove();
+	// 	}
+	// }
+	for(key in lastPaths)
+	{
+		if(key == user)	//Does this work for Strings?
+		{
+			lastPaths[key].remove();
+		} 
 	}
 }
 
@@ -216,15 +235,14 @@ function emitEndPath() {
 */
 function emitRemovePath(path){
 	var sessionId = io.socket.sessionid;
-	var data = {id:path.id};
-	console.log(path.id);
+	var data = {user:sessionId};
 	io.emit('removePath',data,sessionId)
 }
 
 /*******Refactoring Path Emission 4/2*********/
 function emitTempPathRefactored(path) {
 	var sessionId = io.socket.sessionid;
-	data = {datapath: path.pathData, color:path.strokeColor, id:sessionId};
+	data = {datapath: path.pathData, color:path.strokeColor, user:sessionId};
 	io.emit('drawTempPathRefactored',data,sessionId);
 }
 
@@ -244,7 +262,10 @@ io.on( 'endPath', function( data ) {
 	endPath();
 });
 io.on('removePath',function(data){
-	removePath(data.id);
+	removePath(data.user);
+});
+io.on('drawTempPathRefactored', function(data){
+	drawTempPathRefactored(data);
 });
 /*-------Map Buttons to Functions----------*/
 $(function() {
