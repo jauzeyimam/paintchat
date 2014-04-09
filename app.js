@@ -70,7 +70,7 @@ io.sockets.on('connection', function(socket) {
     /******Draw Functions********/
     socket.on('endPath', function(data, session) {
         // console.log("session " + session + " completed path:");
-        socket.broadcast.to(socket.room).emit('endPath');
+        socket.broadcast.to(socket.room).emit('endPath',data);
     })
     socket.on('addPoint', function(data, session) {
         //console.log("session " + session + " added:");

@@ -19,22 +19,21 @@ function activateFreeDraw(){
 freeDraw.onMouseDown = function(event) {
 	myPath = new Path();
 	myPath.strokeColor = randomColor();
-	emitPath(myPath);
+	view.draw();
 }
 freeDraw.onMouseDrag = function(event) {
-	
 	if(myPath != null)
 	{
-		//emitPoint(event.point);
-		emitRemovePath(myPath);
 		myPath.add(event.point);
-		emitPath(myPath); 
+		if(myPath.pathData != null){
+			emitPath(myPath); 
+			emitPoint(event.point);
+		}
 		view.draw();
 	}
 }
 freeDraw.onMouseUp = function(event) {
-	// emitEndPath();
-	// emitPath(myPath); //To prevent other users from seeing incomplete paths uncomment this line, emitPath, and drawPath functions
+	emitEndPath();
 	myPath = null;
 }
 
@@ -143,16 +142,17 @@ function randomColor() {
 function addPoint(data)
 {
 	point = new Point(data.x, data.y);
-	otherPath.strokeColor = data.color
-	otherPath.add(point);
+	// lastPaths[data.user].strokeColor = data.color
+	lastPaths[data.user].add(point);
 	view.draw();
 }
 /*--------endPath--------
 * invoked when another user is done
 * drawing their path
 */
-function endPath() {
-	otherPath = new Path();
+function endPath(user) {
+	delete lastPaths[user];
+	// console.log("Last path cleared for ", user);
 }
 /*-------------drawPath-----------------
 * Draws a path and updates the lastPaths 
@@ -188,7 +188,7 @@ function removePath(user){
 function emitPoint(point)
 {
 	var sessionId = io.socket.sessionid;
-	var data = {x:point.x, y:point.y, color:myPath.strokeColor};
+	var data = {x:point.x, y:point.y, color:myPath.strokeColor, user:sessionId};
 	io.emit('addPoint',data,sessionId);
 }
 
@@ -198,6 +198,7 @@ function emitPoint(point)
 */
 function emitPath(path){
 	var sessionId = io.socket.sessionid;
+	// console.log(path.pathData);
 	data = {datapath: path.pathData, color:path.strokeColor, user:sessionId};
 	io.emit('drawPath',data,sessionId);
 }
@@ -208,7 +209,8 @@ function emitPath(path){
 */
 function emitEndPath() {
 	var sessionId = io.socket.sessionid;
-	io.emit('endPath',sessionId);
+	data = {user:sessionId};
+	io.emit('endPath',data,sessionId);
 }
 /*----------emitRemovePath--------------
 * tell other users to remove a path
@@ -227,7 +229,7 @@ io.on( 'drawPath', function(data) {
 	drawPath(data);
 })
 io.on( 'endPath', function( data ) {
-	endPath();
+	endPath(data.user);
 });
 io.on('removePath',function(data){
 	removePath(data.user);
