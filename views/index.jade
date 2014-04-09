@@ -1,7 +1,25 @@
 extends layout
 
-block content
-	div.container
+block loginroom
+	div.container#loginarea
+		div.col-md-offset-4.col-md-4.shadowed(style="border:1px solid black; margin-top:75px;")
+			div.col-sm-offset-2.col-sm-10(style="padding-left:4px;")
+				h1 Get Started!
+			form.form-horizontal(role="form")
+				div.form-group
+					label.col-sm-2.control-label(for="pseudo") Pseudo
+					div.col-sm-10
+						input.form-control#pseudo(type="text")
+				div.form-group
+					label.col-sm-2.control-label(for="roomname") Room name
+					div.col-sm-10
+						input.form-control#roomname(type="text")
+				div.form-group
+					div.col-sm-offset-2.col-sm-10
+						button.btn.btn-success(type="button", onclick="setInformation()")#loginsubmit Go!
+
+block paintroom
+	div.container#paintchatroom
 		div.col-md-9
 			button#lineDraw Line Draw
 			button#freeDraw Free Draw
