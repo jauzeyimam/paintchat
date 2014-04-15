@@ -48,6 +48,11 @@ io.sockets.on('connection', function(socket) {
         socket.set('pseudo', data);
         socket.username = data;
         console.log('Pseudo: ', data);
+        var message = {
+            'message': "Your pseudo is " + data,
+            pseudo: "Server"
+        };
+        socket.emit('message', message);
     });
     socket.on('setRoom', function(room) {
         socket.room = room;
@@ -57,7 +62,12 @@ io.sockets.on('connection', function(socket) {
             pseudo: "Server"
         };
         socket.emit('message', data);
-        console.log("Room: ", room);
+        var data = {
+            'message': socket.username + " joined " + socket.room,
+            pseudo: "Server"
+        };
+        socket.broadcast.to(socket.room).emit('message', data);
+
     });
     socket.on('message', function(message) {
         socket.get('pseudo', function(error, name) {
