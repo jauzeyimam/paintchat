@@ -26,10 +26,11 @@ freeDraw.onMouseDown = function(event) {
 freeDraw.onMouseDrag = function(event) {
 	if(myPath != null)
 	{
+		emitRemovePath(myPath);
 		myPath.add(event.point);
 		if(myPath.pathData != null){
 			emitPath(myPath); 
-			emitPoint(event.point);
+			// emitPoint(event.point);
 		}
 		view.draw();
 	}
