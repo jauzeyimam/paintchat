@@ -17,19 +17,6 @@ function sentMessage() {
         $('#messageInput').val('');
     }
 }
-
-//not used anymore
-/*function setPseudo(name) {
-    // console.log("setting pseudo");
-    if ($("#pseudoInput").val() != "")
-    {
-        io.emit('setPseudo', $("#pseudoInput").val());
-        $('#chatControls').show();
-        $('#pseudoInput').hide();
-        $('#pseudoSet').hide();
-    }
-}*/
-
 function setInformation() {
     //Temporarily commented out to make editing home page less annoying :P
     var name = $('#pseudo').val();
@@ -51,14 +38,6 @@ function setInformation() {
         alert("Please enter all information!");
     }
 }
-// io.on('connect', function() {
-//     //Temporarily commented out to make editing home page less annoying :P 
-//     // io.emit('setPseudo', prompt("Name?"));
-//     $('#chatControls').show();
-//     $('#pseudoInput').hide();
-//     $('#pseudoSet').hide();
-//     // io.emit('setRoom', prompt("Room?"));
-// });
 
 io.on('message', function(data) {
     // console.log("message added");
