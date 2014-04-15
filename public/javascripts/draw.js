@@ -11,6 +11,8 @@ var lastPaths = {};				//Map for every other users last path drawn
 /***Drawing Tools****/
 var freeDraw = new Tool();
 var lineDraw = new Tool();
+var circleDraw = new Tool();
+var rectangleDraw = new Tool();
 
 /********Free Draw Functions**********/
 function activateFreeDraw(){
@@ -19,7 +21,7 @@ function activateFreeDraw(){
 freeDraw.onMouseDown = function(event) {
 	myPath = new Path();
 	myPath.strokeColor = randomColor();
-	view.draw();
+	view.draw();		//DOES THIS CAUSE LAG?
 }
 freeDraw.onMouseDrag = function(event) {
 	if(myPath != null)
@@ -67,6 +69,61 @@ lineDraw.onMouseUp = function(event) {
 	myPath = null;
 }
 
+/**********Circle Draw Functions*********/
+function activateCircleDraw(){
+	circleDraw.activate();
+}
+
+circleDraw.onMouseDown = function(event) {
+	myPath = new Path.Circle(event.point,0);
+	startPoint = event.point;
+	myPath.strokeColor = randomColor();
+	emitPath(myPath);
+	view.draw();
+}
+circleDraw.onMouseDrag = function(event) {
+	
+	if(myPath != null)
+	{
+		var color = myPath.strokeColor;
+		emitRemovePath(myPath);
+		myPath.remove();
+		myPath = new Path.Circle(event.point,startPoint.getDistance(event.point));
+		myPath.strokeColor = color;
+		emitPath(myPath);
+		view.draw();
+	}
+}
+
+/**********Rectangle Draw Functions*********/
+function activateRectangleDraw(){
+	rectangleDraw.activate();
+}
+
+rectangleDraw.onMouseDown = function(event) {
+	myPath = new Path.Rectangle(event.point,event.point);
+	startPoint = event.point;
+	myPath.strokeColor = randomColor();
+	emitPath(myPath);
+	view.draw();
+}
+rectangleDraw.onMouseDrag = function(event) {
+	
+	if(myPath != null)
+	{
+		var color = myPath.strokeColor;
+		emitRemovePath(myPath);
+		myPath.remove();
+		myPath = new Path.Rectangle(startPoint,event.point);
+		myPath.strokeColor = color;
+		emitPath(myPath);
+		view.draw();
+	}
+}
+
+rectangleDraw.onMouseUp = function(event) {
+	myPath = null;
+}
 /*****Resize Function*********/
 function onResize(event) {
 	paper.view.viewSize = [canvas.offsetWidth,canvas.offsetHeight];
@@ -239,5 +296,7 @@ io.on('removePath',function(data){
 $(function() {
     $("#freeDraw").click(function() {activateFreeDraw()});
     $("#lineDraw").click(function() {activateLineDraw();});
+    $("#circleDraw").click(function() {activateCircleDraw();});
+    $("#rectangleDraw").click(function() {activateRectangleDraw();});
     $("#save").click(function() {saveCanvas();});
 });
