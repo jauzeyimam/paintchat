@@ -7,7 +7,7 @@ var myPath;						//Current path being drawn by this user
 var otherPath = new Path();		//Used for drawing paths from other users
 var startPoint;					//Starting point of a path - used to draw lines
 var lastPaths = {};				//Map for every other users last path drawn
-
+var myColor = "";
 /***Drawing Tools****/
 var freeDraw = new Tool();
 var lineDraw = new Tool();
@@ -20,7 +20,7 @@ function activateFreeDraw(){
 }
 freeDraw.onMouseDown = function(event) {
 	myPath = new Path();
-	myPath.strokeColor = randomColor();
+	myPath.strokeColor = new Color($('#hexVal').val());
 	view.draw();		//DOES THIS CAUSE LAG?
 }
 freeDraw.onMouseDrag = function(event) {
@@ -30,7 +30,6 @@ freeDraw.onMouseDrag = function(event) {
 		myPath.add(event.point);
 		if(myPath.pathData != null){
 			emitPath(myPath); 
-			// emitPoint(event.point);
 		}
 		view.draw();
 	}
@@ -49,7 +48,7 @@ lineDraw.onMouseDown = function(event) {
 	myPath = new Path.Line();
 	myPath.from = event.point;
 	startPoint = event.point;
-	myPath.strokeColor = randomColor();
+	myPath.strokeColor = new Color($('#hexVal').val());
 	emitPath(myPath);
 	view.draw();
 }
@@ -78,7 +77,7 @@ function activateCircleDraw(){
 circleDraw.onMouseDown = function(event) {
 	myPath = new Path.Circle(event.point,0);
 	startPoint = event.point;
-	myPath.strokeColor = randomColor();
+	myPath.strokeColor = new Color($('#hexVal').val());
 	emitPath(myPath);
 	view.draw();
 }
@@ -104,7 +103,7 @@ function activateRectangleDraw(){
 rectangleDraw.onMouseDown = function(event) {
 	myPath = new Path.Rectangle(event.point,event.point);
 	startPoint = event.point;
-	myPath.strokeColor = randomColor();
+	myPath.strokeColor = new Color($('#hexVal').val());
 	emitPath(myPath);
 	view.draw();
 }
