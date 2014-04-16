@@ -27,8 +27,28 @@ block paintroom
 			button#rectangleDraw Rectangle
 			button#saveButton
 				a(href="" id="save" download="saveImage" style="text-decoration:none;color:black;") Save
+			.preview
+				.colorpicker(style='display: none;')
+					canvas#picker(width='300', height='300')
+					.controls
+						div
+							label R
+							input#rVal(type='text')
+						div
+							label G
+							input#gVal(type='text')
+						div
+							label B
+							input#bVal(type='text')
+						div
+							label RGB
+							input#rgbVal(type='text')
+						div
+							label HEX
+							input#hexVal(type='text')
+						button#Cancel Cancel
 		div.col-md-9
-			canvas#draw.shadowed-light(style="width:100%; height:500px;")
+			canvas#draw.shadowed-light(style="width:100%; height:500px; ")
 			img(id="saveImage" style="display:none")
 		div.col-md-3#chatarea.shadowed-light
 			div.row#chatheader(style="height: 55px; border-bottom:1px solid black;")
@@ -41,3 +61,4 @@ block paintroom
 				input(type='text')#messageInput
 				button#submit Send
 	script(type="text/paperscript", src="javascripts/draw.js", canvas="draw")
+	script(src="/javascripts/color.js")
