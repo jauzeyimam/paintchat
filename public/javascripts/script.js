@@ -31,8 +31,8 @@ function setInformation() {
         $('#loginarea').hide();
         $('#paintchatroom').show();
         paper.view.viewSize = [width,height];
-        // canvas.offsetWidth = width;
-        // canvas.offsetHeight = height;
+        canvas.offsetWidth = width;
+        canvas.offsetHeight = height;
     }
     else {
         alert("Please enter all information!");
@@ -48,10 +48,10 @@ $(document).ready(function() {
     canvas = document.getElementById("draw");
     width = canvas.offsetWidth;
     height = canvas.offsetHeight;
-    // $('#paintchatroom').hide();
+    $('#paintchatroom').hide();
 
-    // $('#loginarea').show();
-    $('#loginarea').hide();
+    $('#loginarea').show();
+    // $('#loginarea').hide();
 
     $("#messageInput").keyup(function(e) {
         if (e.keyCode == 13) {
