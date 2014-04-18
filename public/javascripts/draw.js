@@ -162,7 +162,7 @@ textType.onMouseDown = function(event){
 		point: event.point,
 		fontSize : 12,
 		fillColor : new Color($('#hexVal').val()),
-		content: 'Releas Mouse to type here\nPress escape to stop typing'
+		content: 'Release Mouse to type here\nPress escape to stop typing'
 	});
 	view.draw();
 }
@@ -171,10 +171,12 @@ textType.onMouseDrag = function(event){
 }
 textType.onMouseUp = function(event){
 	myPath.content = '';
+	emitText(myPath);
 }
 textType.onKeyDown = function(event){
 	if(myPath != null)
 	{
+		emitRemovePath(myPath);
 		if(event.key == 'escape')
 		{
 			myPath = null;
@@ -199,6 +201,7 @@ textType.onKeyDown = function(event){
 		{
 			myPath.content = myPath.content + event.key;
 		}
+		emitText(myPath);
 	}
 	view.draw();
 }
@@ -302,6 +305,22 @@ function drawPath(data){
 	view.draw();
 }
 
+/*-------------typeText-----------------
+* Types Text and updates the lastPaths 
+* array to hold that path in the users
+* slot
+*/
+function typeText(data){
+	// console.log(data);
+	lastPaths[data.user] = new PointText({
+		point: new Point(data.x,data.y),
+		fontSize : data.fontSize,
+		fillColor : new Color(data.colorVal),
+		content: data.content
+	});
+	view.draw();
+}
+
 /*------------removePath---------------
 * Cycles through lastPaths array and removes
 * the last path drawn by the user
@@ -340,6 +359,18 @@ function emitPath(path){
 	io.emit('drawPath',data,sessionId);
 }
 
+/* ---------emitText-------------
+* used to send a text object to other
+* users. Also sends the color, fontSize
+* and content.
+*/
+function emitText(text){
+	var sessionId = io.socket.sessionid;
+	console.log(text);
+	data = {x:text.point.x, y:text.point.y, fontSize: text.fontSize, content: text.content, colorVal:$('#hexVal').val(), user:sessionId};
+	io.emit('typeText',data,sessionId);
+}
+
 /*------------emitEndPath-------------
 * tell other users that a path has been
 * completed.
@@ -364,6 +395,9 @@ io.on('addPoint',function(data) {
 })
 io.on( 'drawPath', function(data) {
 	drawPath(data);
+})
+io.on( 'typeText', function(data) {
+	typeText(data);
 })
 io.on( 'endPath', function( data ) {
 	endPath(data.user);
