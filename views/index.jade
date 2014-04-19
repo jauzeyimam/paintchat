@@ -20,14 +20,14 @@ block loginroom
 
 block paintroom
 	div.container#paintchatroom
-		div.col-md-9
-			button#freeDraw Free
-			button#lineDraw Line
-			button#circleDraw Circle
-			button#rectangleDraw Rectangle
-			button#saveButton
+		div#buttons.col-md-9
+			button#freeDraw.btn.btn-default.active Free
+			button#lineDraw.btn.btn-default Line
+			button#circleDraw.btn.btn-default Circle
+			button#rectangleDraw.btn.btn-default Rectangle
+			button#saveButton.btn.btn-default
 				a(href="" id="save" download="saveImage" style="text-decoration:none;color:black;") Save
-			.preview
+			.preview.pull-left
 				.colorpicker(style='display: none;')
 					canvas#picker(width='300', height='300')
 					.controls
