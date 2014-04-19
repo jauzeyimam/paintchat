@@ -20,16 +20,16 @@ block loginroom
 
 block paintroom
 	div.container#paintchatroom
-		div.col-md-9
-			button#freeDraw Free
-			button#lineDraw Line
-			button#rectangleDraw Rectangle
-			button#circleDraw Circle
-			button#ellipseDraw Ellipse
-			button#textType Text
-			button#saveButton
+		div#buttons.col-md-9
+			button#freeDraw.btn.btn-default.active Free
+			button#lineDraw.btn.btn-default Line
+			button#rectangleDraw.btn.btn-default Rectangle
+			button#circleDraw.btn.btn-default Circle
+			button#ellipseDraw.btn.btn-default Ellipse
+			button#textType.btn.btn-default Text
+			button#saveButton.btn.btn-default
 				a(href="" id="save" download="saveImage" style="text-decoration:none;color:black;") Save
-			.preview
+			.preview.pull-left
 				.colorpicker(style='display: none;')
 					canvas#picker(width='300', height='300')
 					.controls
