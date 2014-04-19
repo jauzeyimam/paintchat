@@ -50,7 +50,7 @@ canvas{
 }
 .controls {
     float: right;
-    margin: 10px;
+    margin: 5px;
 }
 .controls > div {
     border: 1px solid #2F2F2F;
@@ -75,6 +75,11 @@ canvas{
 }
 .controls > button {
     border: 1px solid #2F2F2F;
+    background-color: #222222;
+    margin-bottom: 5px;
+    overflow: hidden;
+    padding: 5px;
+    /*border: 1px solid #2F2F2F;
     overflow: hidden;
     background-color: #121212;
     border: 1px solid #2F2F2F;
@@ -84,7 +89,7 @@ canvas{
     height: 34px;
     text-align: center;
     text-transform: uppercase;
-    width: 120px;
+    width: 120px;*/
 }
 .preview {
     background: url("/images/select.png") repeat scroll center center transparent;

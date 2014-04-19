@@ -13,6 +13,8 @@ var freeDraw = new Tool();
 var lineDraw = new Tool();
 var circleDraw = new Tool();
 var rectangleDraw = new Tool();
+var ellipseDraw = new Tool();
+var textType = new Tool();
 
 /********Free Draw Functions**********/
 function activateFreeDraw(){
@@ -121,9 +123,90 @@ rectangleDraw.onMouseDrag = function(event) {
 	}
 }
 
-rectangleDraw.onMouseUp = function(event) {
+/**********Ellipse Draw Functions*********/
+function activateEllipseDraw(){
+	ellipseDraw.activate();
+}
+
+ellipseDraw.onMouseDown = function(event) {
+	myPath = new Path.Ellipse(new Rectangle(event.point,event.point));
+	startPoint = event.point;
+	myPath.strokeColor = new Color($('#hexVal').val());
+	emitPath(myPath);
+	view.draw();
+}
+ellipseDraw.onMouseDrag = function(event) {
+	
+	if(myPath != null)
+	{
+		var color = myPath.strokeColor;
+		emitRemovePath(myPath);
+		myPath.remove();
+		myPath = new Path.Ellipse(new Rectangle(startPoint,event.point));
+		myPath.strokeColor = color;
+		emitPath(myPath);
+		view.draw();
+	}
+}
+
+ellipseDraw.onMouseUp = function(event) {
 	myPath = null;
 }
+
+/**********Text Type Functions*********/
+function activateTextType(){
+	textType.activate();
+}
+textType.onMouseDown = function(event){
+	myPath = new PointText({
+		point: event.point,
+		fontSize : 12,
+		fillColor : new Color($('#hexVal').val()),
+		content: 'Release Mouse to type here\nPress escape to stop typing'
+	});
+	view.draw();
+}
+textType.onMouseDrag = function(event){
+	myPath.point = event.point;
+}
+textType.onMouseUp = function(event){
+	myPath.content = '';
+	emitText(myPath);
+}
+textType.onKeyDown = function(event){
+	if(myPath != null)
+	{
+		emitRemovePath(myPath);
+		if(event.key == 'escape')
+		{
+			myPath = null;
+		}
+		else if(event.key == 'space')
+		{
+			myPath.content = myPath.content + ' ';
+		}
+		else if(event.key == 'enter')
+		{
+			myPath.content = myPath.content + '\n';
+		}
+		else if(event.key == 'backspace')
+		{
+			myPath.content = myPath.content.substring(0,myPath.content.length -1);
+		}
+		else if(event.key.length > 1)
+		{
+			//don't show control, alt, home, end etc.
+		}
+		else
+		{
+			myPath.content = myPath.content + event.key;
+		}
+		emitText(myPath);
+	}
+	view.draw();
+}
+
+
 /*****Resize Function*********/
 function onResize(event) {
 	paper.view.viewSize = [canvas.offsetWidth,canvas.offsetHeight];
@@ -222,6 +305,22 @@ function drawPath(data){
 	view.draw();
 }
 
+/*-------------typeText-----------------
+* Types Text and updates the lastPaths 
+* array to hold that path in the users
+* slot
+*/
+function typeText(data){
+	// console.log(data);
+	lastPaths[data.user] = new PointText({
+		point: new Point(data.x,data.y),
+		fontSize : data.fontSize,
+		fillColor : new Color(data.colorVal),
+		content: data.content
+	});
+	view.draw();
+}
+
 /*------------removePath---------------
 * Cycles through lastPaths array and removes
 * the last path drawn by the user
@@ -260,6 +359,18 @@ function emitPath(path){
 	io.emit('drawPath',data,sessionId);
 }
 
+/* ---------emitText-------------
+* used to send a text object to other
+* users. Also sends the color, fontSize
+* and content.
+*/
+function emitText(text){
+	var sessionId = io.socket.sessionid;
+	console.log(text);
+	data = {x:text.point.x, y:text.point.y, fontSize: text.fontSize, content: text.content, colorVal:$('#hexVal').val(), user:sessionId};
+	io.emit('typeText',data,sessionId);
+}
+
 /*------------emitEndPath-------------
 * tell other users that a path has been
 * completed.
@@ -285,6 +396,9 @@ io.on('addPoint',function(data) {
 io.on( 'drawPath', function(data) {
 	drawPath(data);
 })
+io.on( 'typeText', function(data) {
+	typeText(data);
+})
 io.on( 'endPath', function( data ) {
 	endPath(data.user);
 });
@@ -298,5 +412,8 @@ $(function() {
     $("#lineDraw").click(function() {activateLineDraw();});
     $("#circleDraw").click(function() {activateCircleDraw();});
     $("#rectangleDraw").click(function() {activateRectangleDraw();});
+    $("#ellipseDraw").click(function() {activateEllipseDraw();});
+    $("#textType").click(function(){activateTextType();});
     $("#save").click(function() {saveCanvas();});
+
 });

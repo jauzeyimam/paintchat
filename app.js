@@ -94,6 +94,11 @@ io.sockets.on('connection', function(socket) {
         //console.log(data);
         socket.broadcast.to(socket.room).emit('drawPath', data);
     })
+    socket.on('typeText', function(data, session) {
+        //console.log("session " + session + " drew:");
+        //console.log(data);
+        socket.broadcast.to(socket.room).emit('typeText', data);
+    })
     socket.on('removePath', function(data, session) {
         socket.broadcast.to(socket.room).emit('removePath', data);
     })
