@@ -149,44 +149,57 @@ ellipseDraw.onMouseUp = function(event) {
 }
 
 /**********Text Type Functions*********/
-function activateTextType() {
-    textType.activate();
+function activateTextType(){
+	textType.activate();
 }
-textType.onMouseDown = function(event) {
-    myPath = new PointText({
-        point: event.point,
-        fontSize: 12,
-        fillColor: new Color($('#hexVal').val()),
-        content: 'Release Mouse to type here\nPress escape to stop typing'
-    });
-    view.draw();
+textType.onMouseDown = function(event){
+	myPath = new PointText({
+		point: event.point,
+		fontSize : 12,
+		fillColor : new Color($('#hexVal').val()),
+		content: 'Release Mouse to type here\nPress escape to stop typing'
+	});
+	view.draw();
 }
-textType.onMouseDrag = function(event) {
-    myPath.point = event.point;
+textType.onMouseDrag = function(event){
+	myPath.point = event.point;
 }
-textType.onMouseUp = function(event) {
-    myPath.content = '';
-    emitText(myPath);
+textType.onMouseUp = function(event){
+	myPath.content = '';
+	emitText(myPath);
 }
-textType.onKeyDown = function(event) {
-    if (myPath != null) {
-        emitRemovePath(myPath);
-        if (event.key == 'escape') {
-            myPath = null;
-        } else if (event.key == 'space') {
-            myPath.content = myPath.content + ' ';
-        } else if (event.key == 'enter') {
-            myPath.content = myPath.content + '\n';
-        } else if (event.key == 'backspace') {
-            myPath.content = myPath.content.substring(0, myPath.content.length - 1);
-        } else if (event.key.length > 1) {
-            //don't show control, alt, home, end etc.
-        } else {
-            myPath.content = myPath.content + event.key;
-        }
-        emitText(myPath);
-    }
-    view.draw();
+textType.onKeyDown = function(event){
+	if(myPath != null && document.activeElement != document.getElementById("messageInput"))
+	{
+		emitRemovePath(myPath);
+		if(event.key == 'escape')
+		{
+			myPath = null;
+		}
+		else if(event.key == 'space')
+		{
+			myPath.content = myPath.content + ' ';
+		}
+		else if(event.key == 'enter')
+		{
+			myPath.content = myPath.content + '\n';
+		}
+		else if(event.key == 'backspace')
+		{
+			myPath.content = myPath.content.substring(0,myPath.content.length -1);
+		}
+		else if(event.key.length > 1)
+		{
+			//don't show control, alt, home, end etc.
+		}
+		else
+		{
+			myPath.content = myPath.content + event.key;
+		}
+		myPath.fillColor = new Color($('#hexVal').val());
+		emitText(myPath);
+	}
+	view.draw();
 }
 
 
@@ -344,7 +357,7 @@ function emitPath(path) {
         user: sessionId
     };
     io.emit('drawPath', data, sessionId);
-}
+}console
 
 /* ---------emitText-------------
  * used to send a text object to other
@@ -353,7 +366,7 @@ function emitPath(path) {
  */
 function emitText(text) {
     var sessionId = io.socket.sessionid;
-    console.log(text);
+    // console.log(text);
     data = {
         x: text.point.x,
         y: text.point.y,

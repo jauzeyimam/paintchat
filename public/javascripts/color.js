@@ -16,7 +16,7 @@ $(function(){
     var canvas = document.getElementById('picker');
     var ctx = canvas.getContext('2d');
     var drawCanvas = document.getElementById('draw');
-    var drawctx = canvas.getContext('2d');
+    var drawctx = drawCanvas.getContext('2d');
 
     // drawing active image
     var image = new Image();
