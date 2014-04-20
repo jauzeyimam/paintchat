@@ -174,7 +174,7 @@ textType.onMouseUp = function(event){
 	emitText(myPath);
 }
 textType.onKeyDown = function(event){
-	if(myPath != null)
+	if(myPath != null && document.activeElement != document.getElementById("messageInput"))
 	{
 		emitRemovePath(myPath);
 		if(event.key == 'escape')
@@ -201,6 +201,7 @@ textType.onKeyDown = function(event){
 		{
 			myPath.content = myPath.content + event.key;
 		}
+		myPath.fillColor = new Color($('#hexVal').val());
 		emitText(myPath);
 	}
 	view.draw();
