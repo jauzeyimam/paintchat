@@ -149,7 +149,6 @@ ellipseDraw.onMouseUp = function(event) {
 }
 
 /**********Text Type Functions*********/
-<<<<<<< HEAD
 function activateTextType(){
 	textType.activate();
 }
@@ -358,7 +357,7 @@ function emitPath(path) {
         user: sessionId
     };
     io.emit('drawPath', data, sessionId);
-}
+}console
 
 /* ---------emitText-------------
  * used to send a text object to other
@@ -367,7 +366,7 @@ function emitPath(path) {
  */
 function emitText(text) {
     var sessionId = io.socket.sessionid;
-    console.log(text);
+    // console.log(text);
     data = {
         x: text.point.x,
         y: text.point.y,
