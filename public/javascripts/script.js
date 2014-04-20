@@ -1,10 +1,9 @@
-// var socket = io.connect();
 var canvas;
 var width;
 var height;
 
 function addMessage(msg, pseudo) {
-    $("#chatEntries").append('<div class="message"><p>' + pseudo + ' : ' + msg + '</p></div>');
+    $("#chatEntries").append('<div class="message"><p>' + pseudo + ': ' + msg + '</p></div>');
     var s = document.getElementById('chatmessages').scrollHeight;
     $('#chatmessages').scrollTop(s);
 }
@@ -61,10 +60,17 @@ function setInformation() {
         paper.view.viewSize = [width, height];
         canvas.offsetWidth = width;
         canvas.offsetHeight = height;
+        updateChatArea(room, name);
     } else {
         alert("Invalid psuedo or roomname. \n\n-only letters and numbers\n-no blank fields\n-no fields longer than 15 characters\n-use underscore for spaces");
         console.log("Invalid psuedo or roomname. \n\n-only letters and numbers\n-no blank fields\n-no fields longer than 15 characters\n-use underscore for spaces");
     }
+}
+
+function updateChatArea(room, name) {
+    console.log("updateChatArea: " + room + ", " + name);
+    $('#roomnamedisplay').text(room);
+    $('#pseudonamedisplay').text(name);
 }
 
 function sanitizeLogin(str) {
