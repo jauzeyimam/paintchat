@@ -103,13 +103,15 @@ canvas{
     color: #DDDDDD;
     float: right;
     font-size: 10px;
-    height: 34px;
+    height: 34px
+            var imageData ;
     text-align: center;
     text-transform: uppercase;
     width: 120px;*/
 }
 .preview {
     background: url("/images/select.png") repeat scroll center center transparent;
+    background-color: #000000;
     border-radius: 3px;
     display: inline-block;
     cursor: pointer;
