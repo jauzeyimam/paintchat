@@ -15,6 +15,7 @@ var circleDraw = new Tool();
 var rectangleDraw = new Tool();
 var ellipseDraw = new Tool();
 var textType = new Tool();
+var selectionTool = new Tool();
 
 /********Free Draw Functions**********/
 function activateFreeDraw(){
@@ -28,7 +29,7 @@ freeDraw.onMouseDown = function(event) {
 freeDraw.onMouseDrag = function(event) {
 	if(myPath != null)
 	{
-		emitRemovePath(myPath);
+		emitRemovePath();
 		myPath.add(event.point);
 		if(myPath.pathData != null){
 			emitPath(myPath); 
@@ -59,7 +60,7 @@ lineDraw.onMouseDrag = function(event) {
 	if(myPath != null)
 	{
 		var color = myPath.strokeColor;
-		emitRemovePath(myPath);
+		emitRemovePath();
 		myPath.remove();
 		myPath = new Path.Line(startPoint,event.point);
 		myPath.strokeColor = color;
@@ -68,6 +69,7 @@ lineDraw.onMouseDrag = function(event) {
 	}
 }
 lineDraw.onMouseUp = function(event) {
+	emitEndPath();
 	myPath = null;
 }
 
@@ -88,13 +90,18 @@ circleDraw.onMouseDrag = function(event) {
 	if(myPath != null)
 	{
 		var color = myPath.strokeColor;
-		emitRemovePath(myPath);
+		emitRemovePath();
 		myPath.remove();
 		myPath = new Path.Circle(event.point,startPoint.getDistance(event.point));
 		myPath.strokeColor = color;
 		emitPath(myPath);
 		view.draw();
 	}
+}
+circleDraw.onMouseUp = function(event)
+{
+	emitEndPath();
+	myPath = null;
 }
 
 /**********Rectangle Draw Functions*********/
@@ -114,13 +121,17 @@ rectangleDraw.onMouseDrag = function(event) {
 	if(myPath != null)
 	{
 		var color = myPath.strokeColor;
-		emitRemovePath(myPath);
+		emitRemovePath();
 		myPath.remove();
 		myPath = new Path.Rectangle(startPoint,event.point);
 		myPath.strokeColor = color;
 		emitPath(myPath);
 		view.draw();
 	}
+}
+rectangleDraw.onMouseUp = function(event){
+	emitEndPath();
+	myPath = null;
 }
 
 /**********Ellipse Draw Functions*********/
@@ -140,7 +151,7 @@ ellipseDraw.onMouseDrag = function(event) {
 	if(myPath != null)
 	{
 		var color = myPath.strokeColor;
-		emitRemovePath(myPath);
+		emitRemovePath();
 		myPath.remove();
 		myPath = new Path.Ellipse(new Rectangle(startPoint,event.point));
 		myPath.strokeColor = color;
@@ -150,6 +161,7 @@ ellipseDraw.onMouseDrag = function(event) {
 }
 
 ellipseDraw.onMouseUp = function(event) {
+	emitEndPath();
 	myPath = null;
 }
 
@@ -176,7 +188,7 @@ textType.onMouseUp = function(event){
 textType.onKeyDown = function(event){
 	if(myPath != null && document.activeElement != document.getElementById("messageInput"))
 	{
-		emitRemovePath(myPath);
+		emitRemovePath();
 		if(event.key == 'escape')
 		{
 			myPath = null;
@@ -199,13 +211,66 @@ textType.onKeyDown = function(event){
 		}
 		else
 		{
-			myPath.content = myPath.content + event.key;
+			if(event.modifiers.shift)
+				{
+					var c = event.key.toUpperCase();
+					myPath.content = myPath.content + c;
+				}
+			else
+				{
+					myPath.content = myPath.content + event.key;
+				}
 		}
 		myPath.fillColor = new Color($('#hexVal').val());
 		emitText(myPath);
 	}
 	view.draw();
 }
+/**********Selection Tool Functions*********/
+var hitOptions = {
+	// segments: true,
+	stroke: true,
+	// fill: true,
+	tolerance: 5
+};
+function activateSelectionTool(){
+	selectionTool.activate();
+}
+selectionTool.onMouseDown = function(event){
+	var hitResult = project.hitTest(event.point, hitOptions);
+	emitSelectPath(hitResult.point);
+	if (hitResult.item != myPath) {
+		if(myPath != null)
+		{
+			myPath.strokeWidth = myPath.strokeWidth/2;
+		}
+		myPath = hitResult.item;
+		myPath.strokeWidth = myPath.strokeWidth*2;
+	}
+	else if(myPath == hitResult.item)
+	{
+		myPath.strokeWidth = myPath.strokeWidth/2;
+		myPath = null;
+	}
+}
+selectionTool.onMouseDrag = function (event) {
+	if (myPath != null) {
+		myPath.position += event.delta;
+		emitRemovePath();
+		emitPath(myPath);
+	}
+}
+selectionTool.onKeyDown = function(event){
+	if(myPath != null && document.activeElement != document.getElementById("messageInput"))
+	{
+		if(event.key == 'delete' || event.key == 'backspace')
+		{
+			emitRemovePath();
+			myPath.remove();
+		}
+	}
+}
+
 
 
 /*****Resize Function*********/
@@ -292,7 +357,7 @@ function addPoint(data)
 * drawing their path
 */
 function endPath(user) {
-	delete lastPaths[user];
+	lastPaths[user] = null;
 	// console.log("Last path cleared for ", user);
 }
 /*-------------drawPath-----------------
@@ -303,6 +368,7 @@ function endPath(user) {
 function drawPath(data){
 	lastPaths[data.user]= new Path(data.datapath);
 	lastPaths[data.user].strokeColor = data.color;
+	lastPaths[data.user].strokeWidth = data.strokeWidth;
 	view.draw();
 }
 
@@ -334,6 +400,32 @@ function removePath(user){
 			lastPaths[key].remove();
 		} 
 	}
+	view.draw();
+}
+/*-------------selectPath-----------------
+* Draws a path and updates the lastPaths 
+* array to hold that path in the users
+* slot
+*/
+function selectPath(data){
+	//Do we need to emit null path at the end of all tools?
+	console.log("data",data);
+	var hitResult = project.hitTest(new Point(data.x,data.y), hitOptions);
+	console.log("Other user selected path: ", hitResult);
+	if (hitResult.item != lastPaths[data.user]) {
+		if(lastPaths[data.user] != null)
+		{
+			lastPaths[data.user].strokeWidth = lastPaths[data.user].strokeWidth/2;
+		}
+		lastPaths[data.user] = hitResult.item;
+		lastPaths[data.user].strokeWidth = lastPaths[data.user].strokeWidth*2;
+	}
+	else
+	{
+		lastPaths[data.user].strokeWidth = lastPaths[data.user].strokeWidth/2;
+		lastPaths[data.user] = null;
+	}
+	view.draw();
 }
 
 /*********Sending this Users Path***********/
@@ -356,7 +448,7 @@ function emitPoint(point)
 function emitPath(path){
 	var sessionId = io.socket.sessionid;
 	// console.log(path.pathData);
-	data = {datapath: path.pathData, color:path.strokeColor, user:sessionId};
+	data = {datapath: path.pathData, color:path.strokeColor, strokeWidth: path.strokeWidth, user:sessionId};
 	io.emit('drawPath',data,sessionId);
 }
 
@@ -367,7 +459,7 @@ function emitPath(path){
 */
 function emitText(text){
 	var sessionId = io.socket.sessionid;
-	console.log(text);
+	// console.log(text);
 	data = {x:text.point.x, y:text.point.y, fontSize: text.fontSize, content: text.content, colorVal:$('#hexVal').val(), user:sessionId};
 	io.emit('typeText',data,sessionId);
 }
@@ -384,10 +476,19 @@ function emitEndPath() {
 /*----------emitRemovePath--------------
 * tell other users to remove a path
 */
-function emitRemovePath(path){
+function emitRemovePath(){
 	var sessionId = io.socket.sessionid;
 	var data = {user:sessionId};
 	io.emit('removePath',data,sessionId)
+}
+/*----------emitSelectPath--------------
+* tell other users that yous selected
+* a path
+*/
+function emitSelectPath(point){
+	var sessionId = io.socket.sessionid;
+	var data = {user:sessionId, x: point.x, y: point.y};
+	io.emit('selectPath',data,sessionId)
 }
 
 /******Socket.io Code*********/
@@ -406,6 +507,9 @@ io.on( 'endPath', function( data ) {
 io.on('removePath',function(data){
 	removePath(data.user);
 });
+io.on('selectPath',function(data){
+	selectPath(data);
+});
 
 /*-------Map Buttons to Functions----------*/
 $(function() {
@@ -415,6 +519,8 @@ $(function() {
     $("#rectangleDraw").click(function() {activateRectangleDraw();});
     $("#ellipseDraw").click(function() {activateEllipseDraw();});
     $("#textType").click(function(){activateTextType();});
+    $("#selectionTool").click(function(){activateSelectionTool();});
     $("#save").click(function() {saveCanvas();});
 
-});
+}
+);
