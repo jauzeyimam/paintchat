@@ -102,4 +102,7 @@ io.sockets.on('connection', function(socket) {
     socket.on('removePath', function(data, session) {
         socket.broadcast.to(socket.room).emit('removePath', data);
     })
+    socket.on('selectPath', function(data, session) {
+        socket.broadcast.to(socket.room).emit('selectPath', data);
+    })
 });
