@@ -27,6 +27,7 @@ block paintroom
 			button#circleDraw.btn.btn-default Circle
 			button#ellipseDraw.btn.btn-default Ellipse
 			button#textType.btn.btn-default Text
+			button#selectionTool.btn.btn-default Select
 			button#saveButton.btn.btn-default
 				a(href="" id="save" download="saveImage" style="text-decoration:none;color:black;") Save
 			.preview.pull-left
@@ -53,8 +54,9 @@ block paintroom
 			canvas#draw.shadowed-light(style="width:100%; height:500px; ")
 			img(id="saveImage" style="display:none")
 		div.col-md-3#chatarea.shadowed-light
-			div.row#chatheader(style="height: 55px; border-bottom:1px solid black;")
-				h3 Chat
+			div.row#chatheader
+				h3#roomnamedisplay.pull-left Chat
+				h3#pseudonamedisplay.pull-right Pseudo
 			div.row#chatmessages
 				input(type='text')#pseudoInput
 				button#pseudoSet Set Pseudo
