@@ -267,7 +267,20 @@ selectionTool.onKeyDown = function(event){
 		{
 			emitRemovePath();
 			myPath.remove();
+            myPath = null;
 		}
+        if(event.key == 'f')
+        {
+            emitRemovePath();
+            myPath.fillColor = new Color($('#hexVal').val());
+            emitPath(myPath);
+        }
+        if(event.key == 'c')
+        {
+            emitRemovePath();
+            myPath.strokeColor = new Color($('#hexVal').val());
+            emitPath(myPath);
+        }
 	}
 }
 
@@ -367,6 +380,7 @@ function drawPath(data){
 	lastPaths[data.user]= new Path(data.datapath);
 	lastPaths[data.user].strokeColor = data.color;
 	lastPaths[data.user].strokeWidth = data.strokeWidth;
+    lastPaths[data.user].fillColor = data.fillColor;
 	view.draw();
 }
 
@@ -450,7 +464,12 @@ function emitPoint(point) {
 function emitPath(path){
 	var sessionId = io.socket.sessionid;
 	// console.log(path.pathData);
-	data = {datapath: path.pathData, color:path.strokeColor, strokeWidth: path.strokeWidth, user:sessionId};
+	data = {datapath: path.pathData,
+        color:path.strokeColor,
+        strokeWidth: path.strokeWidth,
+        user:sessionId,
+        fillColor: path.fillColor
+    };
 	io.emit('drawPath',data,sessionId);
 }
 
