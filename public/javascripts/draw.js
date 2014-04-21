@@ -1,12 +1,12 @@
 /**Javascript file conrolling drawing on canvas**/
 var canvas = document.getElementById("draw"); // Canvas element
-paper.view.viewSize = [canvas.offsetWidth,canvas.offsetHeight];	//Makes the input area same size as the canvas
+paper.view.viewSize = [canvas.offsetWidth, canvas.offsetHeight]; //Makes the input area same size as the canvas
 
 /**Path Variables***/
-var myPath;						//Current path being drawn by this user
-var otherPath = new Path();		//Used for drawing paths from other users
-var startPoint;					//Starting point of a path - used to draw lines
-var lastPaths = {};				//Map for every other users last path drawn
+var myPath; //Current path being drawn by this user
+var otherPath = new Path(); //Used for drawing paths from other users
+var startPoint; //Starting point of a path - used to draw lines
+var lastPaths = {}; //Map for every other users last path drawn
 var myColor = "";
 /***Drawing Tools****/
 var freeDraw = new Tool();
@@ -18,13 +18,13 @@ var textType = new Tool();
 var selectionTool = new Tool();
 
 /********Free Draw Functions**********/
-function activateFreeDraw(){
-	freeDraw.activate();
+function activateFreeDraw() {
+    freeDraw.activate();
 }
 freeDraw.onMouseDown = function(event) {
-	myPath = new Path();
-	myPath.strokeColor = new Color($('#hexVal').val());
-	view.draw();		//DOES THIS CAUSE LAG?
+    myPath = new Path();
+    myPath.strokeColor = new Color($('#hexVal').val());
+    view.draw(); //DOES THIS CAUSE LAG?
 }
 freeDraw.onMouseDrag = function(event) {
 	if(myPath != null)
@@ -38,22 +38,22 @@ freeDraw.onMouseDrag = function(event) {
 	}
 }
 freeDraw.onMouseUp = function(event) {
-	emitEndPath();
-	myPath = null;
+    emitEndPath();
+    myPath = null;
 }
 
 /**********Line Draw Functions*********/
-function activateLineDraw(){
-	lineDraw.activate();
+function activateLineDraw() {
+    lineDraw.activate();
 }
 
 lineDraw.onMouseDown = function(event) {
-	myPath = new Path.Line();
-	myPath.from = event.point;
-	startPoint = event.point;
-	myPath.strokeColor = new Color($('#hexVal').val());
-	emitPath(myPath);
-	view.draw();
+    myPath = new Path.Line();
+    myPath.from = event.point;
+    startPoint = event.point;
+    myPath.strokeColor = new Color($('#hexVal').val());
+    emitPath(myPath);
+    view.draw();
 }
 lineDraw.onMouseDrag = function(event) {
 	
@@ -74,16 +74,16 @@ lineDraw.onMouseUp = function(event) {
 }
 
 /**********Circle Draw Functions*********/
-function activateCircleDraw(){
-	circleDraw.activate();
+function activateCircleDraw() {
+    circleDraw.activate();
 }
 
 circleDraw.onMouseDown = function(event) {
-	myPath = new Path.Circle(event.point,0);
-	startPoint = event.point;
-	myPath.strokeColor = new Color($('#hexVal').val());
-	emitPath(myPath);
-	view.draw();
+    myPath = new Path.Circle(event.point, 0);
+    startPoint = event.point;
+    myPath.strokeColor = new Color($('#hexVal').val());
+    emitPath(myPath);
+    view.draw();
 }
 circleDraw.onMouseDrag = function(event) {
 	
@@ -105,16 +105,16 @@ circleDraw.onMouseUp = function(event)
 }
 
 /**********Rectangle Draw Functions*********/
-function activateRectangleDraw(){
-	rectangleDraw.activate();
+function activateRectangleDraw() {
+    rectangleDraw.activate();
 }
 
 rectangleDraw.onMouseDown = function(event) {
-	myPath = new Path.Rectangle(event.point,event.point);
-	startPoint = event.point;
-	myPath.strokeColor = new Color($('#hexVal').val());
-	emitPath(myPath);
-	view.draw();
+    myPath = new Path.Rectangle(event.point, event.point);
+    startPoint = event.point;
+    myPath.strokeColor = new Color($('#hexVal').val());
+    emitPath(myPath);
+    view.draw();
 }
 rectangleDraw.onMouseDrag = function(event) {
 	
@@ -135,16 +135,16 @@ rectangleDraw.onMouseUp = function(event){
 }
 
 /**********Ellipse Draw Functions*********/
-function activateEllipseDraw(){
-	ellipseDraw.activate();
+function activateEllipseDraw() {
+    ellipseDraw.activate();
 }
 
 ellipseDraw.onMouseDown = function(event) {
-	myPath = new Path.Ellipse(new Rectangle(event.point,event.point));
-	startPoint = event.point;
-	myPath.strokeColor = new Color($('#hexVal').val());
-	emitPath(myPath);
-	view.draw();
+    myPath = new Path.Ellipse(new Rectangle(event.point, event.point));
+    startPoint = event.point;
+    myPath.strokeColor = new Color($('#hexVal').val());
+    emitPath(myPath);
+    view.draw();
 }
 ellipseDraw.onMouseDrag = function(event) {
 	
@@ -275,20 +275,19 @@ selectionTool.onKeyDown = function(event){
 
 /*****Resize Function*********/
 function onResize(event) {
-	paper.view.viewSize = [canvas.offsetWidth,canvas.offsetHeight];
+    paper.view.viewSize = [canvas.offsetWidth, canvas.offsetHeight];
 }
 
 /*-----Save Canvas---------
-* Saves the canvas as an image
-* automatically downloads as .png
-*/
-function saveCanvas()
-{
-	//cache height and width        
+ * Saves the canvas as an image
+ * automatically downloads as .png
+ */
+function saveCanvas() {
+    //cache height and width        
     var w = canvas.width;
     var h = canvas.height;
     var context = canvas.getContext('2d');
-    var data;       
+    var data;
 
     //get the current ImageData for the canvas.
     data = context.getImageData(0, 0, w, h);
@@ -303,32 +302,32 @@ function saveCanvas()
     context.fillStyle = 'white';
 
     //draw background / rect on entire canvas
-    context.fillRect(0,0,w,h);
+    context.fillRect(0, 0, w, h);
 
     //get the image data from the canvas
     var imageData = canvas.toDataURL("image/png");
 
     //clear the canvas
-    context.clearRect (0,0,w,h);
+    context.clearRect(0, 0, w, h);
 
     //restore it with original / cached ImageData
-    context.putImageData(data, 0,0);        
+    context.putImageData(data, 0, 0);
 
     //reset the globalCompositeOperation to what it was
     context.globalCompositeOperation = compositeOperation;
 
     var saveImage = document.getElementById("saveImage");
-	saveImage.src = imageData;
-	document.getElementById("save").href = saveImage.src;
+    saveImage.src = imageData;
+    document.getElementById("save").href = saveImage.src;
 }
 
 
 /*-----randomColor--------
-* generates a random color
-* will always be opaque
-*/
+ * generates a random color
+ * will always be opaque
+ */
 function randomColor() {
-    
+
     return {
         red: Math.random(),
         green: Math.random(),
@@ -340,22 +339,21 @@ function randomColor() {
 /*****Processing Other Users Path*******/
 
 /*-------------addPoint-----------------
-* adds a point received from other users
-* to the otherPath global path
-* BUG: if two other users are drawing at
-* the same time!!
-*/
-function addPoint(data)
-{
-	point = new Point(data.x, data.y);
-	// lastPaths[data.user].strokeColor = data.color
-	lastPaths[data.user].add(point);
-	view.draw();
+ * adds a point received from other users
+ * to the otherPath global path
+ * BUG: if two other users are drawing at
+ * the same time!!
+ */
+function addPoint(data) {
+    point = new Point(data.x, data.y);
+    // lastPaths[data.user].strokeColor = data.color
+    lastPaths[data.user].add(point);
+    view.draw();
 }
 /*--------endPath--------
-* invoked when another user is done
-* drawing their path
-*/
+ * invoked when another user is done
+ * drawing their path
+ */
 function endPath(user) {
 	lastPaths[user] = null;
 	// console.log("Last path cleared for ", user);
@@ -373,19 +371,19 @@ function drawPath(data){
 }
 
 /*-------------typeText-----------------
-* Types Text and updates the lastPaths 
-* array to hold that path in the users
-* slot
-*/
-function typeText(data){
-	// console.log(data);
-	lastPaths[data.user] = new PointText({
-		point: new Point(data.x,data.y),
-		fontSize : data.fontSize,
-		fillColor : new Color(data.colorVal),
-		content: data.content
-	});
-	view.draw();
+ * Types Text and updates the lastPaths
+ * array to hold that path in the users
+ * slot
+ */
+function typeText(data) {
+    // console.log(data);
+    lastPaths[data.user] = new PointText({
+        point: new Point(data.x, data.y),
+        fontSize: data.fontSize,
+        fillColor: new Color(data.colorVal),
+        content: data.content
+    });
+    view.draw();
 }
 
 /*------------removePath---------------
@@ -431,14 +429,18 @@ function selectPath(data){
 /*********Sending this Users Path***********/
 
 /* --------emitPoint-----------
-* used to send the last point of a path
-* to the other users. Also sends the color.
-*/
-function emitPoint(point)
-{
-	var sessionId = io.socket.sessionid;
-	var data = {x:point.x, y:point.y, color:myPath.strokeColor, user:sessionId};
-	io.emit('addPoint',data,sessionId);
+ * used to send the last point of a path
+ * to the other users. Also sends the color.
+ */
+function emitPoint(point) {
+    var sessionId = io.socket.sessionid;
+    var data = {
+        x: point.x,
+        y: point.y,
+        color: myPath.strokeColor,
+        user: sessionId
+    };
+    io.emit('addPoint', data, sessionId);
 }
 
 /* ---------emitPath--------------
@@ -465,15 +467,18 @@ function emitText(text){
 }
 
 /*------------emitEndPath-------------
-* tell other users that a path has been
-* completed.
-*/
+ * tell other users that a path has been
+ * completed.
+ */
 function emitEndPath() {
-	var sessionId = io.socket.sessionid;
-	data = {user:sessionId};
-	io.emit('endPath',data,sessionId);
+    var sessionId = io.socket.sessionid;
+    data = {
+        user: sessionId
+    };
+    io.emit('endPath', data, sessionId);
 }
 /*----------emitRemovePath--------------
+<<<<<<< HEAD
 * tell other users to remove a path
 */
 function emitRemovePath(){
@@ -492,20 +497,20 @@ function emitSelectPath(point){
 }
 
 /******Socket.io Code*********/
-io.on('addPoint',function(data) {
-	addPoint(data);
+io.on('addPoint', function(data) {
+    addPoint(data);
 })
-io.on( 'drawPath', function(data) {
-	drawPath(data);
+io.on('drawPath', function(data) {
+    drawPath(data);
 })
-io.on( 'typeText', function(data) {
-	typeText(data);
+io.on('typeText', function(data) {
+    typeText(data);
 })
-io.on( 'endPath', function( data ) {
-	endPath(data.user);
+io.on('endPath', function(data) {
+    endPath(data.user);
 });
-io.on('removePath',function(data){
-	removePath(data.user);
+io.on('removePath', function(data) {
+    removePath(data.user);
 });
 io.on('selectPath',function(data){
 	selectPath(data);
