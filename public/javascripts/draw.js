@@ -20,7 +20,7 @@ var selectionTool = new Tool();
 
 /********Free Draw Functions**********/
 function activateFreeDraw() {
-	clearSelection();
+    clearSelection();
     freeDraw.activate();
 }
 freeDraw.onMouseDown = function(event) {
@@ -29,15 +29,14 @@ freeDraw.onMouseDown = function(event) {
     view.draw(); //DOES THIS CAUSE LAG?
 }
 freeDraw.onMouseDrag = function(event) {
-	if(myPath != null)
-	{
-		emitRemovePath();
-		myPath.add(event.point);
-		if(myPath.pathData != null){
-			emitPath(myPath); 
-		}
-		view.draw();
-	}
+    if (myPath != null) {
+        emitRemovePath();
+        myPath.add(event.point);
+        if (myPath.pathData != null) {
+            emitPath(myPath);
+        }
+        view.draw();
+    }
 }
 freeDraw.onMouseUp = function(event) {
     emitEndPath();
@@ -59,21 +58,20 @@ lineDraw.onMouseDown = function(event) {
     view.draw();
 }
 lineDraw.onMouseDrag = function(event) {
-	
-	if(myPath != null)
-	{
-		var color = myPath.strokeColor;
-		emitRemovePath();
-		myPath.remove();
-		myPath = new Path.Line(startPoint,event.point);
-		myPath.strokeColor = color;
-		emitPath(myPath);
-		view.draw();
-	}
+
+    if (myPath != null) {
+        var color = myPath.strokeColor;
+        emitRemovePath();
+        myPath.remove();
+        myPath = new Path.Line(startPoint, event.point);
+        myPath.strokeColor = color;
+        emitPath(myPath);
+        view.draw();
+    }
 }
 lineDraw.onMouseUp = function(event) {
-	emitEndPath();
-	myPath = null;
+    emitEndPath();
+    myPath = null;
 }
 
 /**********Circle Draw Functions*********/
@@ -90,22 +88,20 @@ circleDraw.onMouseDown = function(event) {
     view.draw();
 }
 circleDraw.onMouseDrag = function(event) {
-	
-	if(myPath != null)
-	{
-		var color = myPath.strokeColor;
-		emitRemovePath();
-		myPath.remove();
-		myPath = new Path.Circle(event.point,startPoint.getDistance(event.point));
-		myPath.strokeColor = color;
-		emitPath(myPath);
-		view.draw();
-	}
+
+    if (myPath != null) {
+        var color = myPath.strokeColor;
+        emitRemovePath();
+        myPath.remove();
+        myPath = new Path.Circle(event.point, startPoint.getDistance(event.point));
+        myPath.strokeColor = color;
+        emitPath(myPath);
+        view.draw();
+    }
 }
-circleDraw.onMouseUp = function(event)
-{
-	emitEndPath();
-	myPath = null;
+circleDraw.onMouseUp = function(event) {
+    emitEndPath();
+    myPath = null;
 }
 
 /**********Rectangle Draw Functions*********/
@@ -122,21 +118,20 @@ rectangleDraw.onMouseDown = function(event) {
     view.draw();
 }
 rectangleDraw.onMouseDrag = function(event) {
-	
-	if(myPath != null)
-	{
-		var color = myPath.strokeColor;
-		emitRemovePath();
-		myPath.remove();
-		myPath = new Path.Rectangle(startPoint,event.point);
-		myPath.strokeColor = color;
-		emitPath(myPath);
-		view.draw();
-	}
+
+    if (myPath != null) {
+        var color = myPath.strokeColor;
+        emitRemovePath();
+        myPath.remove();
+        myPath = new Path.Rectangle(startPoint, event.point);
+        myPath.strokeColor = color;
+        emitPath(myPath);
+        view.draw();
+    }
 }
-rectangleDraw.onMouseUp = function(event){
-	emitEndPath();
-	myPath = null;
+rectangleDraw.onMouseUp = function(event) {
+    emitEndPath();
+    myPath = null;
 }
 
 /**********Ellipse Draw Functions*********/
@@ -153,22 +148,21 @@ ellipseDraw.onMouseDown = function(event) {
     view.draw();
 }
 ellipseDraw.onMouseDrag = function(event) {
-	
-	if(myPath != null)
-	{
-		var color = myPath.strokeColor;
-		emitRemovePath();
-		myPath.remove();
-		myPath = new Path.Ellipse(new Rectangle(startPoint,event.point));
-		myPath.strokeColor = color;
-		emitPath(myPath);
-		view.draw();
-	}
+
+    if (myPath != null) {
+        var color = myPath.strokeColor;
+        emitRemovePath();
+        myPath.remove();
+        myPath = new Path.Ellipse(new Rectangle(startPoint, event.point));
+        myPath.strokeColor = color;
+        emitPath(myPath);
+        view.draw();
+    }
 }
 
 ellipseDraw.onMouseUp = function(event) {
-	emitEndPath();
-	myPath = null;
+    emitEndPath();
+    myPath = null;
 }
 /**********Star Draw Functions*********/
 function activateStarDraw() {
@@ -177,215 +171,183 @@ function activateStarDraw() {
 }
 
 starDraw.onMouseDown = function(event) {
-    myPath = new Path.Star(event.point,5,0,0);
+    myPath = new Path.Star(event.point, 5, 0, 0);
     startPoint = event.point;
     myPath.strokeColor = new Color($('#hexVal').val());
     emitPath(myPath);
     view.draw();
 }
-starDraw.onMouseDrag = function(event){
-	if(myPath != null)
-	{
-		var color = myPath.strokeColor;
-		emitRemovePath();
-		myPath.remove();
-		radius = startPoint.getDistance(event.point)
-		myPath = new Path.Star(startPoint,5,radius,radius/2);
-		myPath.strokeColor = color;
-		emitPath(myPath);
-		view.draw();
-	}
+starDraw.onMouseDrag = function(event) {
+    if (myPath != null) {
+        var color = myPath.strokeColor;
+        emitRemovePath();
+        myPath.remove();
+        radius = startPoint.getDistance(event.point)
+        myPath = new Path.Star(startPoint, 5, radius, radius / 2);
+        myPath.strokeColor = color;
+        emitPath(myPath);
+        view.draw();
+    }
 }
 
 starDraw.onMouseUp = function(event) {
-	emitEndPath();
-	myPath = null;
+    emitEndPath();
+    myPath = null;
 }
 
 /**********Text Type Functions*********/
-function activateTextType(){
-	clearSelection();
-	textType.activate();
+function activateTextType() {
+    clearSelection();
+    textType.activate();
 }
-textType.onMouseDown = function(event){
-	myPath = new PointText({
-		point: event.point,
-		fontSize : 12,
-		fillColor : new Color($('#hexVal').val()),
-		content: 'Release Mouse to type here\nPress escape to stop typing'
-	});
-	view.draw();
+textType.onMouseDown = function(event) {
+    myPath = new PointText({
+        point: event.point,
+        fontSize: 12,
+        fillColor: new Color($('#hexVal').val()),
+        content: 'Release Mouse to type here\nPress escape to stop typing'
+    });
+    view.draw();
 }
-textType.onMouseDrag = function(event){
-	myPath.point = event.point;
+textType.onMouseDrag = function(event) {
+    myPath.point = event.point;
 }
-textType.onMouseUp = function(event){
-	myPath.content = '';
-	emitText(myPath);
+textType.onMouseUp = function(event) {
+    myPath.content = '';
+    emitText(myPath);
 }
-textType.onKeyDown = function(event){
-	if(myPath != null && document.activeElement != document.getElementById("messageInput"))
-	{
-		emitRemovePath();
-		if(event.key == 'escape')
-		{
-			myPath = null;
-		}
-		else if(event.key == 'space')
-		{
-			myPath.content = myPath.content + ' ';
-		}
-		else if(event.key == 'enter')
-		{
-			myPath.content = myPath.content + '\n';
-		}
-		else if(event.key == 'backspace')
-		{
-			myPath.content = myPath.content.substring(0,myPath.content.length -1);
-		}
-		else if(event.key.length > 1)
-		{
-			//don't show control, alt, home, end etc.
-		}
-		else
-		{
-			if(event.modifiers.shift)
-				{
-					var c = event.key.toUpperCase();
-					myPath.content = myPath.content + c;
-				}
-			else
-				{
-					myPath.content = myPath.content + event.key;
-				}
-		}
-		myPath.fillColor = new Color($('#hexVal').val());
-		emitText(myPath);
-	}
-	view.draw();
+textType.onKeyDown = function(event) {
+    if (myPath != null && document.activeElement != document.getElementById("messageInput")) {
+        emitRemovePath();
+        if (event.key == 'escape') {
+            myPath = null;
+        } else if (event.key == 'space') {
+            myPath.content = myPath.content + ' ';
+        } else if (event.key == 'enter') {
+            myPath.content = myPath.content + '\n';
+        } else if (event.key == 'backspace') {
+            myPath.content = myPath.content.substring(0, myPath.content.length - 1);
+        } else if (event.key.length > 1) {
+            //don't show control, alt, home, end etc.
+        } else {
+            if (event.modifiers.shift) {
+                var c = event.key.toUpperCase();
+                myPath.content = myPath.content + c;
+            } else {
+                myPath.content = myPath.content + event.key;
+            }
+        }
+        myPath.fillColor = new Color($('#hexVal').val());
+        emitText(myPath);
+    }
+    view.draw();
 }
 /**********Selection Tool Functions*********/
 var hitOptions = {
-	// segments: true,
-	stroke: true,
-	// fill: true,
-	tolerance: 5
+    // segments: true,
+    stroke: true,
+    // fill: true,
+    tolerance: 5
 };
-function activateSelectionTool(){
-	selectionTool.activate();
+
+function activateSelectionTool() {
+    selectionTool.activate();
 }
-selectionTool.onMouseDown = function(event){
-	var hitResult = project.hitTest(event.point, hitOptions);
-	if(hitResult != myPath && myPath != null && myPath.selected)
-	{
-		// emitSelectPath(myPath.firstSegment.point);
-		myPath.selected = false;
-		myPath = null;
-	}
-	if(hitResult != null)
-	{
-		// emitSelectPath(event.point);
-		// if (hitResult.item != myPath) {
-		// 	if(myPath!=null && myPath.selected)
-		// 	{
-		// 		myPath.selected = false;
-		// 		emitSelectPath(myPath.firstSegment.point);
-		// 	}
-		myPath = hitResult.item;
-		myPath.selected = true;
-		// }
-		// else if(myPath == hitResult.item)
-		// {
-		// 	myPath.selected = false;
-		// 	emitSelectPath(myPath.firstSegment.point);
-		// 	myPath = null;
-		// }
-	}
+selectionTool.onMouseDown = function(event) {
+    var hitResult = project.hitTest(event.point, hitOptions);
+    if (hitResult != myPath && myPath != null && myPath.selected) {
+        // emitSelectPath(myPath.firstSegment.point);
+        myPath.selected = false;
+        myPath = null;
+    }
+    if (hitResult != null) {
+        // emitSelectPath(event.point);
+        // if (hitResult.item != myPath) {
+        // 	if(myPath!=null && myPath.selected)
+        // 	{
+        // 		myPath.selected = false;
+        // 		emitSelectPath(myPath.firstSegment.point);
+        // 	}
+        myPath = hitResult.item;
+        myPath.selected = true;
+        emitSelectPath(myPath.firstSegment.point);
+        // }
+        // else if(myPath == hitResult.item)
+        // {
+        // 	myPath.selected = false;
+        // 	emitSelectPath(myPath.firstSegment.point);
+        // 	myPath = null;
+        // }
+    }
 }
-selectionTool.onMouseDrag = function (event) {
-	if (myPath!=null && myPath.selected) {
-		myPath.position += event.delta;
-		emitRemovePath();
-		emitPath(myPath);
-	}
+selectionTool.onMouseDrag = function(event) {
+    if (myPath != null && myPath.selected) {
+        myPath.position += event.delta;
+        emitRemovePath();
+        emitPath(myPath);
+    }
 }
-selectionTool.onKeyDown = function(event){
-	// event.preventDefault();
-	if(myPath != null && document.activeElement != document.getElementById("messageInput"))
-	{
-		if(event.key == 'delete' || event.key == 'backspace')
-		{
-			emitRemovePath();
-			myPath.remove();
+selectionTool.onKeyDown = function(event) {
+    // event.preventDefault();
+    if (myPath != null && document.activeElement != document.getElementById("messageInput")) {
+        if (event.key == 'delete' || event.key == 'backspace') {
+            emitRemovePath();
+            myPath.remove();
             myPath = null;
-		}
-        if(event.key == 'f')
-        {
+        }
+        if (event.key == 'f') {
             var color = new Color($('#hexVal').val());
             emitRemovePath();
-            if(myPath.fillColor != color)
-        	{
-        		myPath.fillColor = color;
-        	}
-        	else
-        	{
-        		myPath.fillColor = null;
-        	}
+            if (myPath.fillColor != color) {
+                myPath.fillColor = color;
+            } else {
+                myPath.fillColor = null;
+            }
             emitPath(myPath);
         }
-        if(event.key == 'c')
-        {
+        if (event.key == 'c') {
             emitRemovePath();
             myPath.strokeColor = new Color($('#hexVal').val());
             emitPath(myPath);
         }
-        if(event.key == 't')
-        {
-    		emitRemovePath();
-        	if(event.modifiers.shift)
-        	{
-        		myPath.strokeWidth-=1;
-        	}
-        	else
-        	{
-        		myPath.strokeWidth+=1;
-        	}
-    		emitPath(myPath);
+        if (event.key == 't') {
+            emitRemovePath();
+            if (event.modifiers.shift) {
+                myPath.strokeWidth -= 1;
+            } else {
+                myPath.strokeWidth += 1;
+            }
+            emitPath(myPath);
         }
-        if(event.key=='up')
-        {
-        	emitRemovePath();
-        	myPath.position.y-=1;
-        	emitPath(myPath);
+        if (event.key == 'up') {
+            emitRemovePath();
+            myPath.position.y -= 1;
+            emitPath(myPath);
         }
-        if(event.key=='right')
-        {
-        	emitRemovePath();
-        	myPath.position.x+=1;
-        	emitPath(myPath);
+        if (event.key == 'right') {
+            emitRemovePath();
+            myPath.position.x += 1;
+            emitPath(myPath);
         }
-        if(event.key=='left')
-        {
-        	emitRemovePath();
-        	myPath.position.x-=1;
-        	emitPath(myPath);
+        if (event.key == 'left') {
+            emitRemovePath();
+            myPath.position.x -= 1;
+            emitPath(myPath);
         }
-        if(event.key=='down')
-        {
-	     	emitRemovePath();
-        	myPath.position.y+=1;
-        	emitPath(myPath);
+        if (event.key == 'down') {
+            emitRemovePath();
+            myPath.position.y += 1;
+            emitPath(myPath);
         }
-	}
+    }
 }
-function clearSelection()
-{
-	if(myPath != null)
-	{
-		emitSelectPath(myPath.firstSegment.point);
-		myPath.selected = false;
-		myPath = null;
-	}
+
+function clearSelection() {
+    if (myPath != null) {
+        emitSelectPath(myPath.firstSegment.point);
+        myPath.selected = false;
+        myPath = null;
+    }
 }
 
 
@@ -472,21 +434,21 @@ function addPoint(data) {
  * drawing their path
  */
 function endPath(user) {
-	lastPaths[user] = null;
-	// console.log("Last path cleared for ", user);
+    lastPaths[user] = null;
+    // console.log("Last path cleared for ", user);
 }
 /*-------------drawPath-----------------
-* Draws a path and updates the lastPaths 
-* array to hold that path in the users
-* slot
-*/
-function drawPath(data){
-	lastPaths[data.user]= new Path(data.datapath);
-	lastPaths[data.user].strokeColor = data.color;
-	lastPaths[data.user].strokeWidth = data.strokeWidth;
+ * Draws a path and updates the lastPaths
+ * array to hold that path in the users
+ * slot
+ */
+function drawPath(data) {
+    lastPaths[data.user] = new Path(data.datapath);
+    lastPaths[data.user].strokeColor = data.color;
+    lastPaths[data.user].strokeWidth = data.strokeWidth;
     lastPaths[data.user].fillColor = data.fillColor;
-    lastPaths[data.user].selected = data.selected;
-	view.draw();
+    // lastPaths[data.user].selected = data.selected;
+    view.draw();
 }
 
 /*-------------typeText-----------------
@@ -506,41 +468,37 @@ function typeText(data) {
 }
 
 /*------------removePath---------------
-* Cycles through lastPaths array and removes
-* the last path drawn by the user
-*/
-function removePath(user){
-	for(key in lastPaths)
-	{
-		if(key == user)
-		{
-			lastPaths[key].remove();
-		} 
-	}
-	view.draw();
+ * Cycles through lastPaths array and removes
+ * the last path drawn by the user
+ */
+function removePath(user) {
+    for (key in lastPaths) {
+        if (key == user) {
+            lastPaths[key].remove();
+        }
+    }
+    view.draw();
 }
 /*-------------selectPath-----------------
-* Draws a path and updates the lastPaths 
-* array to hold that path in the users
-* slot
-*/
-function selectPath(data){
-	//Do we need to emit null path at the end of all tools?
-	var hitResult = project.hitTest(new Point(data.x,data.y), hitOptions);
-	if (hitResult.item != lastPaths[data.user]) {
-		if(lastPaths[data.user]!=null && lastPaths[data.user].selected)
-		{
-			lastPaths[data.user].selected = false;
-		}
-		lastPaths[data.user] = hitResult.item;
-		lastPaths[data.user].selected = true;
-	}
-	else
-	{
-		lastPaths[data.user].selected = false;
-		// lastPaths[data.user] = null;
-	}
-	view.draw();
+ * Draws a path and updates the lastPaths
+ * array to hold that path in the users
+ * slot
+ */
+function selectPath(data) {
+    //Do we need to emit null path at the end of all tools?
+    var hitResult = project.hitTest(new Point(data.x, data.y), hitOptions);
+    // if (hitResult.item != lastPaths[data.user]) {
+    //     if (lastPaths[data.user] != null && lastPaths[data.user].selected) {
+    //         lastPaths[data.user].selected = false;
+    //     }
+    //     lastPaths[data.user] = hitResult.item;
+    //     lastPaths[data.user].selected = true;
+    // } else {
+    //     lastPaths[data.user].selected = false;
+    //     // lastPaths[data.user] = null;
+    // }
+    lastPaths[data.user] = hitResult.item;
+    view.draw();
 }
 
 /*********Sending this Users Path***********/
@@ -561,32 +519,40 @@ function emitPoint(point) {
 }
 
 /* ---------emitPath--------------
-* used to send an entier path to other
-* users. Also sends the color.
-*/
-function emitPath(path){
-	var sessionId = io.socket.sessionid;
-	// console.log(path.pathData);
-	data = {datapath: path.pathData,
-        color:path.strokeColor,
+ * used to send an entier path to other
+ * users. Also sends the color.
+ */
+function emitPath(path) {
+    var sessionId = io.socket.sessionid;
+    // console.log(path.pathData);
+    data = {
+        datapath: path.pathData,
+        color: path.strokeColor,
         strokeWidth: path.strokeWidth,
-        user:sessionId,
+        user: sessionId,
         fillColor: path.fillColor,
-        selected: path.selected
+        // selected: path.selected
     };
-	io.emit('drawPath',data,sessionId);
+    io.emit('drawPath', data, sessionId);
 }
 
 /* ---------emitText-------------
-* used to send a text object to other
-* users. Also sends the color, fontSize
-* and content.
-*/
-function emitText(text){
-	var sessionId = io.socket.sessionid;
-	// console.log(text);
-	data = {x:text.point.x, y:text.point.y, fontSize: text.fontSize, content: text.content, colorVal:$('#hexVal').val(), user:sessionId};
-	io.emit('typeText',data,sessionId);
+ * used to send a text object to other
+ * users. Also sends the color, fontSize
+ * and content.
+ */
+function emitText(text) {
+    var sessionId = io.socket.sessionid;
+    // console.log(text);
+    data = {
+        x: text.point.x,
+        y: text.point.y,
+        fontSize: text.fontSize,
+        content: text.content,
+        colorVal: $('#hexVal').val(),
+        user: sessionId
+    };
+    io.emit('typeText', data, sessionId);
 }
 
 /*------------emitEndPath-------------
@@ -604,19 +570,25 @@ function emitEndPath() {
 <<<<<<< HEAD
 * tell other users to remove a path
 */
-function emitRemovePath(){
-	var sessionId = io.socket.sessionid;
-	var data = {user:sessionId};
-	io.emit('removePath',data,sessionId)
+function emitRemovePath() {
+    var sessionId = io.socket.sessionid;
+    var data = {
+        user: sessionId
+    };
+    io.emit('removePath', data, sessionId)
 }
 /*----------emitSelectPath--------------
-* tell other users that yous selected
-* a path
-*/
-function emitSelectPath(point){
-	var sessionId = io.socket.sessionid;
-	var data = {user:sessionId, x: point.x, y: point.y};
-	io.emit('selectPath',data,sessionId)
+ * tell other users that yous selected
+ * a path
+ */
+function emitSelectPath(point) {
+    var sessionId = io.socket.sessionid;
+    var data = {
+        user: sessionId,
+        x: point.x,
+        y: point.y
+    };
+    io.emit('selectPath', data, sessionId)
 }
 
 /******Socket.io Code*********/
@@ -635,21 +607,38 @@ io.on('endPath', function(data) {
 io.on('removePath', function(data) {
     removePath(data.user);
 });
-io.on('selectPath',function(data){
-	selectPath(data);
+io.on('selectPath', function(data) {
+    selectPath(data);
 });
 
 /*-------Map Buttons to Functions----------*/
 $(function() {
-    $("#freeDraw").click(function() {activateFreeDraw()});
-    $("#lineDraw").click(function() {activateLineDraw();});
-    $("#circleDraw").click(function() {activateCircleDraw();});
-    $("#rectangleDraw").click(function() {activateRectangleDraw();});
-    $("#ellipseDraw").click(function() {activateEllipseDraw();});
-    $("#starDraw").click(function(){activateStarDraw();});
-    $("#textType").click(function(){activateTextType();});
-    $("#selectionTool").click(function(){activateSelectionTool();});
-    $("#save").click(function() {saveCanvas();});
+    $("#freeDraw").click(function() {
+        activateFreeDraw()
+    });
+    $("#lineDraw").click(function() {
+        activateLineDraw();
+    });
+    $("#circleDraw").click(function() {
+        activateCircleDraw();
+    });
+    $("#rectangleDraw").click(function() {
+        activateRectangleDraw();
+    });
+    $("#ellipseDraw").click(function() {
+        activateEllipseDraw();
+    });
+    $("#starDraw").click(function() {
+        activateStarDraw();
+    });
+    $("#textType").click(function() {
+        activateTextType();
+    });
+    $("#selectionTool").click(function() {
+        activateSelectionTool();
+    });
+    $("#save").click(function() {
+        saveCanvas();
+    });
 
-}
-);
+});
