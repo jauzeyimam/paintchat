@@ -36,9 +36,28 @@ html
 					//- 		a(href="#linkthree") Link Three	
 					ul.nav.navbar-nav.navbar-right
 						li
-							a(href="#changepseudo") Change Psuedo
+							a(href="#changepseudo" data-toggle="modal" data-target="#changepseudomodal") Change Psuedo
 						li
 							a(href="#changeroom") Change Room
 		div.row#separator(style="width: 100%; height:75px;")
+		<!-- Modal -->
+		div.modal.fade#changepseudomodal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+			div.modal-dialog
+				div.modal-content
+					div.modal-header
+						button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
+						h4.modal-title#myModalLabel Change Pseudo
+					div.modal-body
+						form.form-horizontal(role="form")
+							div.form-group
+								label.col-sm-2.control-label(for="pseudomodal") Pseudo
+								div.col-sm-10
+									input.form-control#pseudomodal(type="text")
+							div.form-group
+								div.col-sm-offset-2.col-sm-10
+									div.pull-right
+										button.btn.btn-default.btn-margin(type="button" data-dismiss="modal") Cancel
+										button.btn.btn-primary.btn-margin.pull-right(type="button" onclick="setInformationModal()" data-dismiss="modal")#loginsubmit Save
+
 		block loginroom
 		block paintroom

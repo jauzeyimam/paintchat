@@ -42,6 +42,10 @@ canvas{
 	border: solid 1px #999;
 }
 
+.btn-margin{
+    margin:0px 1px 0px 1px;
+}
+
 .shadowed{
 	box-shadow: 3px 3px 15px #888888;
 }
@@ -123,3 +127,4 @@ canvas{
 #buttons > button{
     margin: 0px 0.5px 0px 0.5px;
 }
+

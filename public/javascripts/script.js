@@ -67,6 +67,17 @@ function setInformation() {
     }
 }
 
+function setInformationModal() {
+    // alert($('#pseudomodal').val());
+    var name = $('#pseudomodal').val();
+    var room = $('#roomnamedisplay').text();
+    var pass = sanitizeLogin(name);
+    if (pass) {
+        io.emit('setPseudo', name);
+        updateChatArea(room, name);
+    }
+}
+
 function updateChatArea(room, name) {
     console.log("updateChatArea: " + room + ", " + name);
     $('#roomnamedisplay').text(room);
