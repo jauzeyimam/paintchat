@@ -3,7 +3,7 @@ var canvas = document.getElementById("draw"); // Canvas element
 paper.view.viewSize = [canvas.offsetWidth, canvas.offsetHeight]; //Makes the input area same size as the canvas
 
 /**Path Variables***/
-var myPath; //Current path being drawn by this user
+var myPath = null; //Current path being drawn by this user
 var otherPath = new Path(); //Used for drawing paths from other users
 var startPoint; //Starting point of a path - used to draw lines
 var lastPaths = {}; //Map for every other users last path drawn
@@ -14,11 +14,13 @@ var lineDraw = new Tool();
 var circleDraw = new Tool();
 var rectangleDraw = new Tool();
 var ellipseDraw = new Tool();
+var starDraw = new Tool();
 var textType = new Tool();
 var selectionTool = new Tool();
 
 /********Free Draw Functions**********/
 function activateFreeDraw() {
+	clearSelection();
     freeDraw.activate();
 }
 freeDraw.onMouseDown = function(event) {
@@ -44,6 +46,7 @@ freeDraw.onMouseUp = function(event) {
 
 /**********Line Draw Functions*********/
 function activateLineDraw() {
+    clearSelection();
     lineDraw.activate();
 }
 
@@ -75,6 +78,7 @@ lineDraw.onMouseUp = function(event) {
 
 /**********Circle Draw Functions*********/
 function activateCircleDraw() {
+    clearSelection();
     circleDraw.activate();
 }
 
@@ -106,6 +110,7 @@ circleDraw.onMouseUp = function(event)
 
 /**********Rectangle Draw Functions*********/
 function activateRectangleDraw() {
+    clearSelection();
     rectangleDraw.activate();
 }
 
@@ -136,6 +141,7 @@ rectangleDraw.onMouseUp = function(event){
 
 /**********Ellipse Draw Functions*********/
 function activateEllipseDraw() {
+    clearSelection();
     ellipseDraw.activate();
 }
 
@@ -164,9 +170,41 @@ ellipseDraw.onMouseUp = function(event) {
 	emitEndPath();
 	myPath = null;
 }
+/**********Star Draw Functions*********/
+function activateStarDraw() {
+    clearSelection();
+    starDraw.activate();
+}
+
+starDraw.onMouseDown = function(event) {
+    myPath = new Path.Star(event.point,5,0,0);
+    startPoint = event.point;
+    myPath.strokeColor = new Color($('#hexVal').val());
+    emitPath(myPath);
+    view.draw();
+}
+starDraw.onMouseDrag = function(event){
+	if(myPath != null)
+	{
+		var color = myPath.strokeColor;
+		emitRemovePath();
+		myPath.remove();
+		radius = startPoint.getDistance(event.point)
+		myPath = new Path.Star(startPoint,5,radius,radius/2);
+		myPath.strokeColor = color;
+		emitPath(myPath);
+		view.draw();
+	}
+}
+
+starDraw.onMouseUp = function(event) {
+	emitEndPath();
+	myPath = null;
+}
 
 /**********Text Type Functions*********/
 function activateTextType(){
+	clearSelection();
 	textType.activate();
 }
 textType.onMouseDown = function(event){
@@ -238,29 +276,33 @@ function activateSelectionTool(){
 }
 selectionTool.onMouseDown = function(event){
 	var hitResult = project.hitTest(event.point, hitOptions);
-	emitSelectPath(hitResult.point);
-	if (hitResult.item != myPath) {
-		if(myPath != null)
-		{
-			myPath.strokeWidth = myPath.strokeWidth/2;
-		}
-		myPath = hitResult.item;
-		myPath.strokeWidth = myPath.strokeWidth*2;
-	}
-	else if(myPath == hitResult.item)
+	if(hitResult != null)
 	{
-		myPath.strokeWidth = myPath.strokeWidth/2;
-		myPath = null;
+		emitSelectPath(event.point);
+		if (hitResult.item != myPath) {
+			if(myPath!=null && myPath.selected)
+			{
+				myPath.selected = false;
+			}
+			myPath = hitResult.item;
+			myPath.selected = true;
+		}
+		else if(myPath == hitResult.item)
+		{
+			myPath.selected = false;
+			myPath = null;
+		}
 	}
 }
 selectionTool.onMouseDrag = function (event) {
-	if (myPath != null) {
+	if (myPath!=null && myPath.selected) {
 		myPath.position += event.delta;
 		emitRemovePath();
 		emitPath(myPath);
 	}
 }
 selectionTool.onKeyDown = function(event){
+	event.preventDefault();
 	if(myPath != null && document.activeElement != document.getElementById("messageInput"))
 	{
 		if(event.key == 'delete' || event.key == 'backspace')
@@ -271,8 +313,16 @@ selectionTool.onKeyDown = function(event){
 		}
         if(event.key == 'f')
         {
+            var color = new Color($('#hexVal').val());
             emitRemovePath();
-            myPath.fillColor = new Color($('#hexVal').val());
+            if(myPath.fillColor != color)
+        	{
+        		myPath.fillColor = color;
+        	}
+        	else
+        	{
+        		myPath.fillColor = null;
+        	}
             emitPath(myPath);
         }
         if(event.key == 'c')
@@ -281,6 +331,52 @@ selectionTool.onKeyDown = function(event){
             myPath.strokeColor = new Color($('#hexVal').val());
             emitPath(myPath);
         }
+        if(event.key == 't')
+        {
+    		emitRemovePath();
+        	if(event.modifiers.shift)
+        	{
+        		myPath.strokeWidth-=1;
+        	}
+        	else
+        	{
+        		myPath.strokeWidth+=1;
+        	}
+    		emitPath(myPath);
+        }
+        if(event.key=='up')
+        {
+        	emitRemovePath();
+        	myPath.position.y-=1;
+        	emitPath(myPath);
+        }
+        if(event.key=='right')
+        {
+        	emitRemovePath();
+        	myPath.position.x+=1;
+        	emitPath(myPath);
+        }
+        if(event.key=='left')
+        {
+        	emitRemovePath();
+        	myPath.position.x-=1;
+        	emitPath(myPath);
+        }
+        if(event.key=='down')
+        {
+	     	emitRemovePath();
+        	myPath.position.y+=1;
+        	emitPath(myPath);
+        }
+	}
+}
+function clearSelection()
+{
+	if(myPath != null)
+	{
+		emitSelectPath(myPath.firstSegment.point);
+		myPath.selected = false;
+		myPath = null;
 	}
 }
 
@@ -381,6 +477,7 @@ function drawPath(data){
 	lastPaths[data.user].strokeColor = data.color;
 	lastPaths[data.user].strokeWidth = data.strokeWidth;
     lastPaths[data.user].fillColor = data.fillColor;
+    lastPaths[data.user].selected = data.selected;
 	view.draw();
 }
 
@@ -425,16 +522,18 @@ function selectPath(data){
 	var hitResult = project.hitTest(new Point(data.x,data.y), hitOptions);
 	console.log("Other user selected path: ", hitResult);
 	if (hitResult.item != lastPaths[data.user]) {
-		if(lastPaths[data.user] != null)
+		if(lastPaths[data.user]!=null && lastPaths[data.user].selected)
 		{
-			lastPaths[data.user].strokeWidth = lastPaths[data.user].strokeWidth/2;
+			// lastPaths[data.user].strokeWidth = lastPaths[data.user].strokeWidth/2;
+			lastPaths[data.user].selected = false;
 		}
 		lastPaths[data.user] = hitResult.item;
-		lastPaths[data.user].strokeWidth = lastPaths[data.user].strokeWidth*2;
+		lastPaths[data.user].selected = true;
+		// lastPaths[data.user].strokeWidth = lastPaths[data.user].strokeWidth*2;
 	}
 	else
 	{
-		lastPaths[data.user].strokeWidth = lastPaths[data.user].strokeWidth/2;
+		lastPaths[data.user].selected = false;
 		lastPaths[data.user] = null;
 	}
 	view.draw();
@@ -468,7 +567,8 @@ function emitPath(path){
         color:path.strokeColor,
         strokeWidth: path.strokeWidth,
         user:sessionId,
-        fillColor: path.fillColor
+        fillColor: path.fillColor,
+        selected: path.selected
     };
 	io.emit('drawPath',data,sessionId);
 }
@@ -542,6 +642,7 @@ $(function() {
     $("#circleDraw").click(function() {activateCircleDraw();});
     $("#rectangleDraw").click(function() {activateRectangleDraw();});
     $("#ellipseDraw").click(function() {activateEllipseDraw();});
+    $("#starDraw").click(function(){activateStarDraw();});
     $("#textType").click(function(){activateTextType();});
     $("#selectionTool").click(function(){activateSelectionTool();});
     $("#save").click(function() {saveCanvas();});

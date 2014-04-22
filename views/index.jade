@@ -26,6 +26,7 @@ block paintroom
 			button#rectangleDraw.btn.btn-default Rectangle
 			button#circleDraw.btn.btn-default Circle
 			button#ellipseDraw.btn.btn-default Ellipse
+			button#starDraw.btn.btn-default Star
 			button#textType.btn.btn-default Text
 			button#selectionTool.btn.btn-default Select
 			button#saveButton.btn.btn-default
@@ -53,7 +54,7 @@ block paintroom
 		div.col-md-9
 			canvas#draw.shadowed-light(style="width:100%; height:500px; ")
 			img(id="saveImage" style="display:none")
-		div.col-md-3#chatarea.shadowed-light
+		div.col-md-3#chatarea.shadowed-light.pull-right
 			div.row#chatheader
 				h3#roomnamedisplay.pull-left Chat
 				h3#pseudonamedisplay.pull-right Pseudo
