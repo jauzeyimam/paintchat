@@ -29,6 +29,7 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 app.get('/users', user.list);
+console.log("Users" + user.list);
 // I think there is a better way to do this
 // app.get('/homepagetest', routes.homepagetest);
 app.get("/homepagetest", function(req, res) {
@@ -43,7 +44,15 @@ var io = require('socket.io').listen(server, function() {
 // A user connects to the server (opens a socket)
 io.sockets.on('connection', function(socket) {
 
-    /*********Chat Functions**********/
+    socket.on('disconnect', function() {
+        var data = {
+            'message': socket.username + " disconnected",
+            pseudo: "Server"
+        }
+        socket.broadcast.to(socket.room).emit('message', data);
+    });
+
+    /*********Login Functions**********/
     socket.on('setPseudo', function(data) {
         socket.set('pseudo', data);
         socket.username = data;
@@ -67,8 +76,9 @@ io.sockets.on('connection', function(socket) {
             pseudo: "Server"
         };
         socket.broadcast.to(socket.room).emit('message', data);
-
     });
+
+    /*********Chat Functions**********/
     socket.on('message', function(message) {
         socket.get('pseudo', function(error, name) {
             var data = {
@@ -82,7 +92,7 @@ io.sockets.on('connection', function(socket) {
     /******Draw Functions********/
     socket.on('endPath', function(data, session) {
         // console.log("session " + session + " completed path:");
-        socket.broadcast.to(socket.room).emit('endPath',data);
+        socket.broadcast.to(socket.room).emit('endPath', data);
     })
     socket.on('addPoint', function(data, session) {
         //console.log("session " + session + " added:");

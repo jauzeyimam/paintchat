@@ -567,9 +567,8 @@ function emitEndPath() {
     io.emit('endPath', data, sessionId);
 }
 /*----------emitRemovePath--------------
-<<<<<<< HEAD
-* tell other users to remove a path
-*/
+ * tell other users to remove a path
+ */
 function emitRemovePath() {
     var sessionId = io.socket.sessionid;
     var data = {
@@ -618,27 +617,37 @@ $(function() {
     });
     $("#lineDraw").click(function() {
         activateLineDraw();
+        $("#freeDraw").removeClass("active");
     });
     $("#circleDraw").click(function() {
         activateCircleDraw();
+        $("#freeDraw").removeClass("active");
     });
     $("#rectangleDraw").click(function() {
         activateRectangleDraw();
+        $("#freeDraw").removeClass("active");
     });
     $("#ellipseDraw").click(function() {
         activateEllipseDraw();
+        $("#freeDraw").removeClass("active");
     });
     $("#starDraw").click(function() {
         activateStarDraw();
+        $("#freeDraw").removeClass("active");
     });
     $("#textType").click(function() {
         activateTextType();
+        $("#freeDraw").removeClass("active");
     });
     $("#selectionTool").click(function() {
         activateSelectionTool();
+        $("#freeDraw").removeClass("active");
     });
     $("#save").click(function() {
         saveCanvas();
     });
+});
 
+$(document).ready(function() {
+    $("[rel='tooltip']").tooltip();
 });
