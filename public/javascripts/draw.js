@@ -276,6 +276,7 @@ function activateSelectionTool(){
 }
 selectionTool.onMouseDown = function(event){
 	var hitResult = project.hitTest(event.point, hitOptions);
+	console.log("hitResult:", hitResult);
 	if(hitResult != null)
 	{
 		emitSelectPath(event.point);
@@ -283,6 +284,7 @@ selectionTool.onMouseDown = function(event){
 			if(myPath!=null && myPath.selected)
 			{
 				myPath.selected = false;
+				emitSelectPath(myPath.firstSegment.point);
 			}
 			myPath = hitResult.item;
 			myPath.selected = true;
@@ -290,6 +292,7 @@ selectionTool.onMouseDown = function(event){
 		else if(myPath == hitResult.item)
 		{
 			myPath.selected = false;
+			emitSelectPath(myPath.firstSegment.point);
 			myPath = null;
 		}
 	}
