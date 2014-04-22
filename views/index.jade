@@ -21,16 +21,6 @@ block loginroom
 block paintroom
 	div.container#paintchatroom
 		div#buttons.col-md-9
-			button#freeDraw.btn.btn-default.active Free
-			button#lineDraw.btn.btn-default Line
-			button#rectangleDraw.btn.btn-default Rectangle
-			button#circleDraw.btn.btn-default Circle
-			button#ellipseDraw.btn.btn-default Ellipse
-			button#starDraw.btn.btn-default Star
-			button#textType.btn.btn-default Text
-			button#selectionTool.btn.btn-default Select
-			button#saveButton.btn.btn-default
-				a(href="" id="save" download="saveImage" style="text-decoration:none;color:black;") Save
 			.preview.pull-left
 				.colorpicker(style='display: none;')
 					canvas#picker(width='300', height='300')
@@ -51,6 +41,16 @@ block paintroom
 							label HEX
 							input#hexVal(type='text')
 						button#Cancel Cancel
+			button#freeDraw.btn.btn-default.active(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Free
+			button#lineDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Line
+			button#rectangleDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Rectangle
+			button#circleDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Circle
+			button#ellipseDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Ellipse
+			button#starDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Star
+			button#textType.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Text
+			button#selectionTool.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Select
+			button#saveButton.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip")
+				a(href="" id="save" download="saveImage" style="text-decoration:none;color:black;") Save
 		div.col-md-9
 			canvas#draw.shadowed-light(style="width:100%; height:500px; ")
 			img(id="saveImage" style="display:none")
