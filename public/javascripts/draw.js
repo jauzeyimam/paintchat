@@ -276,25 +276,30 @@ function activateSelectionTool(){
 }
 selectionTool.onMouseDown = function(event){
 	var hitResult = project.hitTest(event.point, hitOptions);
-	console.log("hitResult:", hitResult);
+	if(hitResult != myPath && myPath != null && myPath.selected)
+	{
+		// emitSelectPath(myPath.firstSegment.point);
+		myPath.selected = false;
+		myPath = null;
+	}
 	if(hitResult != null)
 	{
-		emitSelectPath(event.point);
-		if (hitResult.item != myPath) {
-			if(myPath!=null && myPath.selected)
-			{
-				myPath.selected = false;
-				emitSelectPath(myPath.firstSegment.point);
-			}
-			myPath = hitResult.item;
-			myPath.selected = true;
-		}
-		else if(myPath == hitResult.item)
-		{
-			myPath.selected = false;
-			emitSelectPath(myPath.firstSegment.point);
-			myPath = null;
-		}
+		// emitSelectPath(event.point);
+		// if (hitResult.item != myPath) {
+		// 	if(myPath!=null && myPath.selected)
+		// 	{
+		// 		myPath.selected = false;
+		// 		emitSelectPath(myPath.firstSegment.point);
+		// 	}
+		myPath = hitResult.item;
+		myPath.selected = true;
+		// }
+		// else if(myPath == hitResult.item)
+		// {
+		// 	myPath.selected = false;
+		// 	emitSelectPath(myPath.firstSegment.point);
+		// 	myPath = null;
+		// }
 	}
 }
 selectionTool.onMouseDrag = function (event) {
@@ -305,7 +310,7 @@ selectionTool.onMouseDrag = function (event) {
 	}
 }
 selectionTool.onKeyDown = function(event){
-	event.preventDefault();
+	// event.preventDefault();
 	if(myPath != null && document.activeElement != document.getElementById("messageInput"))
 	{
 		if(event.key == 'delete' || event.key == 'backspace')
@@ -521,23 +526,19 @@ function removePath(user){
 */
 function selectPath(data){
 	//Do we need to emit null path at the end of all tools?
-	console.log("data",data);
 	var hitResult = project.hitTest(new Point(data.x,data.y), hitOptions);
-	console.log("Other user selected path: ", hitResult);
 	if (hitResult.item != lastPaths[data.user]) {
 		if(lastPaths[data.user]!=null && lastPaths[data.user].selected)
 		{
-			// lastPaths[data.user].strokeWidth = lastPaths[data.user].strokeWidth/2;
 			lastPaths[data.user].selected = false;
 		}
 		lastPaths[data.user] = hitResult.item;
 		lastPaths[data.user].selected = true;
-		// lastPaths[data.user].strokeWidth = lastPaths[data.user].strokeWidth*2;
 	}
 	else
 	{
 		lastPaths[data.user].selected = false;
-		lastPaths[data.user] = null;
+		// lastPaths[data.user] = null;
 	}
 	view.draw();
 }
