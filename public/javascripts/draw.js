@@ -258,26 +258,20 @@ selectionTool.onMouseDown = function(event) {
     if (hitResult != myPath && myPath != null && myPath.selected) {
         // emitSelectPath(myPath.firstSegment.point);
         myPath.selected = false;
+        emitSelectPath(myPath.firstSegment.point);
         myPath = null;
     }
     if (hitResult != null) {
-        // emitSelectPath(event.point);
-        // if (hitResult.item != myPath) {
-        // 	if(myPath!=null && myPath.selected)
-        // 	{
-        // 		myPath.selected = false;
-        // 		emitSelectPath(myPath.firstSegment.point);
-        // 	}
-        myPath = hitResult.item;
-        myPath.selected = true;
-        emitSelectPath(myPath.firstSegment.point);
-        // }
-        // else if(myPath == hitResult.item)
-        // {
-        // 	myPath.selected = false;
-        // 	emitSelectPath(myPath.firstSegment.point);
-        // 	myPath = null;
-        // }
+        var notSelected = true;
+        for (key in lastPaths) {
+            if (hitResult.item == lastPaths[key])
+                notSelected = false;
+        }
+        if (notSelected) {
+            myPath = hitResult.item;
+            myPath.selected = true;
+            emitSelectPath(hitResult.point);
+        }
     }
 }
 selectionTool.onMouseDrag = function(event) {
@@ -485,20 +479,14 @@ function removePath(user) {
  * slot
  */
 function selectPath(data) {
-    //Do we need to emit null path at the end of all tools?
     var hitResult = project.hitTest(new Point(data.x, data.y), hitOptions);
-    // if (hitResult.item != lastPaths[data.user]) {
-    //     if (lastPaths[data.user] != null && lastPaths[data.user].selected) {
-    //         lastPaths[data.user].selected = false;
-    //     }
-    //     lastPaths[data.user] = hitResult.item;
-    //     lastPaths[data.user].selected = true;
-    // } else {
-    //     lastPaths[data.user].selected = false;
-    //     // lastPaths[data.user] = null;
-    // }
-    lastPaths[data.user] = hitResult.item;
-    view.draw();
+    if (hitResult != null) {
+        if (lastPaths[data.user] != hitResult.item) {
+            lastPaths[data.user] = hitResult.item;
+        } else {
+            lastPaths[data.user] = null;
+        }
+    }
 }
 
 /*********Sending this Users Path***********/
