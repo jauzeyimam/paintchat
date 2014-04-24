@@ -50,6 +50,7 @@ io.sockets.on('connection', function(socket) {
             pseudo: "Server"
         }
         socket.broadcast.to(socket.room).emit('message', data);
+        socket.broadcast.to(socket.room).emit('disconnectedUser', socket.id);
     });
 
     /*********Login Functions**********/
