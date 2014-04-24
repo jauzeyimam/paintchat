@@ -37,7 +37,6 @@ $(function() {
             // get current pixel
             var imageData = ctx.getImageData(canvasX, canvasY, 1, 1);
             var pixel = imageData.data;
-            console.log(pixel);
             // update preview color
             var pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", " + pixel[2] + ")";
             $('.preview').css('backgroundColor', pixelColor);
@@ -141,7 +140,6 @@ $(function() {
         var whitelist = "ABCDEFabcdef0123456789";
         for (var i = 1; i < str.length; i++) {
             if (whitelist.indexOf(str.charAt(i)) == -1) {
-                console.log(str.charAt(i));
                 return false;
             }
         }
@@ -150,7 +148,6 @@ $(function() {
 
     function isValidRGB(str) {
         for (var i = 0; i < str.length; i++) {
-            console.log(i, parseInt(str.charAt(i)));
             if (isNaN(str.charAt(i))) {
                 return false;
             }

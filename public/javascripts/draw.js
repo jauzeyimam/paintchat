@@ -304,6 +304,13 @@ selectionTool.onKeyDown = function(event) {
             myPath.strokeColor = new Color($('#hexVal').val());
             emitPath(myPath);
         }
+        if (event.key == 'd') {
+            emitSelectPath(myPath.firstSegment.point);
+            myPath.selected = false;
+            myPath = myPath.clone();
+            myPath.selected = true;
+            emitPath(myPath);
+        }
         if (event.key == 't') {
             emitRemovePath();
             if (event.modifiers.shift) {
@@ -333,6 +340,7 @@ selectionTool.onKeyDown = function(event) {
             myPath.position.y += 1;
             emitPath(myPath);
         }
+        view.draw();
     }
 }
 
