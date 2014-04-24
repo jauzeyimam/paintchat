@@ -255,17 +255,22 @@ function activateSelectionTool() {
 }
 selectionTool.onMouseDown = function(event) {
     var hitResult = project.hitTest(event.point, hitOptions);
+    if (hitResult != myPath && myPath != null && myPath.selected) {
+        // emitSelectPath(myPath.firstSegment.point);
+        myPath.selected = false;
+        emitSelectPath(myPath.firstSegment.point);
+        myPath = null;
+    }
     if (hitResult != null) {
-        emitSelectPath(event.point);
-        if (hitResult.item != myPath) {
-            if (myPath != null && myPath.selected) {
-                myPath.selected = false;
-            }
+        var notSelected = true;
+        for (key in lastPaths) {
+            if (hitResult.item == lastPaths[key])
+                notSelected = false;
+        }
+        if (notSelected) {
             myPath = hitResult.item;
             myPath.selected = true;
-        } else if (myPath == hitResult.item) {
-            myPath.selected = false;
-            myPath = null;
+            emitSelectPath(hitResult.point);
         }
     }
 }
@@ -277,7 +282,7 @@ selectionTool.onMouseDrag = function(event) {
     }
 }
 selectionTool.onKeyDown = function(event) {
-    event.preventDefault();
+    // event.preventDefault();
     if (myPath != null && document.activeElement != document.getElementById("messageInput")) {
         if (event.key == 'delete' || event.key == 'backspace') {
             emitRemovePath();
@@ -436,7 +441,7 @@ function drawPath(data) {
     lastPaths[data.user].strokeColor = data.color;
     lastPaths[data.user].strokeWidth = data.strokeWidth;
     lastPaths[data.user].fillColor = data.fillColor;
-    lastPaths[data.user].selected = data.selected;
+    // lastPaths[data.user].selected = data.selected;
     view.draw();
 }
 
@@ -474,23 +479,14 @@ function removePath(user) {
  * slot
  */
 function selectPath(data) {
-    //Do we need to emit null path at the end of all tools?
-    console.log("data", data);
     var hitResult = project.hitTest(new Point(data.x, data.y), hitOptions);
-    console.log("Other user selected path: ", hitResult);
-    if (hitResult.item != lastPaths[data.user]) {
-        if (lastPaths[data.user] != null && lastPaths[data.user].selected) {
-            // lastPaths[data.user].strokeWidth = lastPaths[data.user].strokeWidth/2;
-            lastPaths[data.user].selected = false;
+    if (hitResult != null) {
+        if (lastPaths[data.user] != hitResult.item) {
+            lastPaths[data.user] = hitResult.item;
+        } else {
+            lastPaths[data.user] = null;
         }
-        lastPaths[data.user] = hitResult.item;
-        lastPaths[data.user].selected = true;
-        // lastPaths[data.user].strokeWidth = lastPaths[data.user].strokeWidth*2;
-    } else {
-        lastPaths[data.user].selected = false;
-        lastPaths[data.user] = null;
     }
-    view.draw();
 }
 
 /*********Sending this Users Path***********/
@@ -523,7 +519,7 @@ function emitPath(path) {
         strokeWidth: path.strokeWidth,
         user: sessionId,
         fillColor: path.fillColor,
-        selected: path.selected
+        // selected: path.selected
     };
     io.emit('drawPath', data, sessionId);
 }
@@ -559,9 +555,8 @@ function emitEndPath() {
     io.emit('endPath', data, sessionId);
 }
 /*----------emitRemovePath--------------
-<<<<<<< HEAD
-* tell other users to remove a path
-*/
+ * tell other users to remove a path
+ */
 function emitRemovePath() {
     var sessionId = io.socket.sessionid;
     var data = {
