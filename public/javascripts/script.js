@@ -3,7 +3,7 @@ var width;
 var height;
 
 function addMessage(msg, pseudo) {
-    $("#chatEntries").append('<div class="message"><p>' + pseudo + ': ' + msg + '</p></div>');
+    $("#chatEntries").append('<div class="message"><p>' + pseudo + '<b>:</b> ' + msg + '</p></div>');
     var s = document.getElementById('chatmessages').scrollHeight;
     $('#chatmessages').scrollTop(s);
 }
@@ -15,7 +15,7 @@ function sentMessage() {
 
     if (safeMessage.length > 0 && safeMessage.length < 141) {
         io.emit('message', safeMessage);
-        addMessage(safeMessage, "Me", new Date().toISOString(), true);
+        addMessage(safeMessage, "<b>Me</b>", new Date().toISOString(), true);
         $('#messageInput').val('');
     } else {
         console.log("Unsafe input.");
@@ -67,14 +67,27 @@ function setInformation() {
     }
 }
 
-function setInformationModal() {
-    // alert($('#pseudomodal').val());
-    var name = $('#pseudomodal').val();
+function changeRoom() {
+    console.log("changing room");
+    var oldName = $('#pseudo').val();
+    document.cookie = "username=" + oldName;
+    window.location = "/";
+}
+
+function changePseudoModal() {
+    var oldName = $('#pseudo').val();
+    var newName = $('#pseudomodal').val();
     var room = $('#roomnamedisplay').text();
-    var pass = sanitizeLogin(name);
+    var pass = sanitizeLogin(oldName) && sanitizeLogin(newName);
     if (pass) {
-        io.emit('setPseudo', name);
-        updateChatArea(room, name);
+        $('#pseudo').val(newName);
+        console.log("changePseudoModal: ", document.activeElement);
+        io.emit('changePseudo', newName, oldName);
+        updateChatArea(room, newName);
+    } else if (oldName == "") {
+        alert("You do not have a name to change! Choose a name through the login screen first.");
+    } else {
+        alert("Invalid name\n\n-only letters and numbers\n-no blank fields\n-no fields longer than 15 characters\n-use underscore for spaces");
     }
 }
 
@@ -101,22 +114,69 @@ io.on('message', function(data) {
     addMessage(data['message'], data['pseudo']);
 });
 
+function updateFocus(id) {
+    console.log("Update focus", id);
+    document.getElementById(id).focus();
+}
+
+function getUsernameCookie() {
+    var cUsername = document.cookie;
+    console.log("cUsername = " + cUsername);
+    var username = cUsername.split('=');
+    username = username[1];
+    $('#pseudo').val(username);
+    console.log("username::" + username);
+    if (username == "" || typeof username === 'undefined') {
+        console.log("True");
+        document.getElementById("pseudo").focus();
+    } else {
+        console.log("False");
+        document.getElementById("roomname").focus();
+    }
+}
+
+function deleteAllCookies() {
+    var cookies = document.cookie.split(";");
+
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        var eqPos = cookie.indexOf("=");
+        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+}
+
 $(document).ready(function() {
+    console.log("Document is ready.");
     canvas = document.getElementById("draw");
     width = canvas.offsetWidth;
     height = canvas.offsetHeight;
     $('#paintchatroom').hide();
-
     $('#loginarea').show();
+
+    getUsernameCookie();
+    deleteAllCookies();
+
+
+
     // Begin: Listen for Enter being pushed
     $("#messageInput").keyup(function(e) {
         if (e.keyCode == 13) {
             sentMessage();
         }
     });
-    $("#pseudo").keyup(function(e) {
+    $("#pseudomodal").keyup(function(e) {
+        if (e.keyCode == 13) {
+            alert("You pushed enter. Pushing enter here does bad things. Please don't push enter until we fix this bug, which has actually become somewhat of a difficult task.");
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
+    $("#pseudo").keypress(function(e) {
         if (e.keyCode == 13) {
             setInformation();
+            e.preventDefault();
+            e.stopPropagation();
         }
     });
     $("#roomname").keyup(function(e) {
