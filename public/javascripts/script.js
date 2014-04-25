@@ -58,8 +58,9 @@ function setInformation() {
         $('#loginarea').hide();
         $('#paintchatroom').show();
         paper.view.viewSize = [width, height];
-        canvas.offsetWidth = width;
-        canvas.offsetHeight = height;
+        //canvas.offsetWidth = width;
+        //canvas.offsetHeight = height;
+        io.emit('connectLogin');
         updateChatArea(room, name);
     } else {
         alert("Invalid psuedo or roomname. \n\n-only letters and numbers\n-no blank fields\n-no fields longer than 15 characters\n-use underscore for spaces");
@@ -113,6 +114,8 @@ io.on('message', function(data) {
     // console.log("message added");
     addMessage(data['message'], data['pseudo']);
 });
+
+io.on('')
 
 function updateFocus(id) {
     console.log("Update focus", id);

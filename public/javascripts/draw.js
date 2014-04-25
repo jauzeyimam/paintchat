@@ -1,4 +1,6 @@
 /**Javascript file conrolling drawing on canvas**/
+console.log(io.socket.sessionid);
+
 var canvas = document.getElementById("draw"); // Canvas element
 paper.view.viewSize = [canvas.offsetWidth, canvas.offsetHeight]; //Makes the input area same size as the canvas
 
@@ -614,6 +616,17 @@ io.on('selectPath', function(data) {
 io.on('disconnectedUser', function(data) {
     disconnectedUser(data);
 });
+io.on('getProject', function(data) {
+	var dataSend = {
+		project: project.exportJSON(),
+		session: data
+	}
+	io.emit('updateProject', dataSend);
+
+});
+io.on('setProject', function(data) {
+	project.importJSON(data);
+})
 
 /*-------Map Buttons to Functions----------*/
 $(function() {
