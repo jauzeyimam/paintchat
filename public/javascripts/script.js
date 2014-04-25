@@ -57,10 +57,10 @@ function setInformation() {
         io.emit('setRoom', room);
         $('#loginarea').hide();
         $('#paintchatroom').show();
-        paper.view.viewSize = [width, height];
         //canvas.offsetWidth = width;
         //canvas.offsetHeight = height;
         io.emit('connectLogin');
+        paper.view.viewSize = [width, height];
         updateChatArea(room, name);
     } else {
         alert("Invalid psuedo or roomname. \n\n-only letters and numbers\n-no blank fields\n-no fields longer than 15 characters\n-use underscore for spaces");
