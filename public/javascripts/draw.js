@@ -304,6 +304,13 @@ selectionTool.onKeyDown = function(event) {
             myPath.strokeColor = new Color($('#hexVal').val());
             emitPath(myPath);
         }
+        if (event.key == 'd') {
+            emitSelectPath(myPath.firstSegment.point);
+            myPath.selected = false;
+            myPath = myPath.clone();
+            myPath.selected = true;
+            emitPath(myPath);
+        }
         if (event.key == 't') {
             emitRemovePath();
             if (event.modifiers.shift) {
@@ -333,6 +340,7 @@ selectionTool.onKeyDown = function(event) {
             myPath.position.y += 1;
             emitPath(myPath);
         }
+        view.draw();
     }
 }
 
@@ -489,6 +497,12 @@ function selectPath(data) {
     }
 }
 
+function disconnectedUser(data) {
+    console.log("sessionId", data);
+    console.log("lastPaths before", lastPaths);
+    delete lastPaths[data];
+    console.log("lastPaths after", lastPaths);
+}
 /*********Sending this Users Path***********/
 
 /* --------emitPoint-----------
@@ -596,6 +610,9 @@ io.on('removePath', function(data) {
 });
 io.on('selectPath', function(data) {
     selectPath(data);
+});
+io.on('disconnectedUser', function(data) {
+    disconnectedUser(data);
 });
 
 /*-------Map Buttons to Functions----------*/
