@@ -47,7 +47,7 @@ io.sockets.on('connection', function(socket) {
     socket.on('disconnect', function() {
         var data = {
             'message': socket.username + " disconnected",
-            pseudo: "Server"
+            pseudo: "<b>Server</b>"
         }
         socket.broadcast.to(socket.room).emit('message', data);
         socket.broadcast.to(socket.room).emit('disconnectedUser', socket.id);
@@ -55,12 +55,13 @@ io.sockets.on('connection', function(socket) {
 
     /*********Login Functions**********/
     socket.on('setPseudo', function(data) {
+        var oldname = data;
         socket.set('pseudo', data);
         socket.username = data;
         console.log('Pseudo: ', data);
         var message = {
-            'message': "Your pseudo is " + data,
-            pseudo: "Server"
+            'message': "Your username is " + data,
+            pseudo: "<b>Server</b>"
         };
         socket.emit('message', message);
     });
@@ -69,14 +70,26 @@ io.sockets.on('connection', function(socket) {
         socket.join(room);
         var data = {
             'message': "Joined room " + room,
-            pseudo: "Server"
+            pseudo: "<b>Server</b>"
         };
         socket.emit('message', data);
         var data = {
             'message': socket.username + " joined " + socket.room,
-            pseudo: "Server"
+            pseudo: "<b>Server</b>"
         };
         socket.broadcast.to(socket.room).emit('message', data);
+    });
+    socket.on('changePseudo', function(newName, oldName) {
+        var message = {
+            'message': "Your username is now " + newName + ".",
+            pseudo: "<b>Server</b>"
+        };
+        socket.emit('message', message);
+        message = {
+            'message': oldName + " changed name to " + newName + ".",
+            pseudo: "<b>Server</b>"
+        };
+        socket.broadcast.to(socket.room).emit('message', message);
     });
 
     /*********Chat Functions**********/
@@ -84,7 +97,7 @@ io.sockets.on('connection', function(socket) {
         socket.get('pseudo', function(error, name) {
             var data = {
                 'message': message,
-                pseudo: name
+                pseudo: "<b>" + name + "</b>"
             };
             socket.broadcast.to(socket.room).emit('message', data);
             console.log("user " + name + " send this : " + message);
