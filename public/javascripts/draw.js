@@ -342,6 +342,9 @@ selectionTool.onKeyDown = function(event) {
             myPath.position.y += 1;
             emitPath(myPath);
         }
+        if (event.key == '=' && event.modifiers.shift) {
+            emitMove
+        }
         view.draw();
     }
 }
@@ -513,8 +516,7 @@ function disconnectedUser(data) {
  * new user that just logged in
  */
 function getProject(data) {
-    var selected = myPath.selected;
-    // var allPaths = lastPaths;
+    var selected;
     var myId = io.socket.sessionid;
     lastPaths[myId] = null;
     if (myPath != null) {
@@ -523,6 +525,7 @@ function getProject(data) {
         lastPaths[myId].strokeWidth = myPath.strokeWidth;
         lastPaths[myId].fillColor = myPath.fillColor;
         myPath.remove();
+        selected = myPath.selected;
         myPath = null;
     }
     for (key in lastPaths) {
