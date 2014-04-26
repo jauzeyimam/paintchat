@@ -59,19 +59,15 @@ io.sockets.on('connection', function(socket) {
         var clients = io.sockets.clients(socket.room);
         console.log("Client 1 " + clients[0]);
         console.log("Connect Login!".blue);
-        if (socket.room != null && socket.username != null) {
+        if (socket.room != null && socket.username != null && clients.length > 1) {
             console.log("passed check 1");
-            //if (canvasActive == 0 && clients.length > 1) {
-                console.log("Clients".red + clients[0].id + ", " + clients[clients.length-1].id);
-                io.sockets.socket(clients[0].id).emit('getProject', socket.id);
-                //socket.broadcast.to(socket.room).emit('getProject');
-                console.log("Set Project");
-            //}
+            console.log("Clients".red + clients[0].id + ", " + clients[clients.length - 1].id);
+            io.sockets.socket(clients[0].id).emit('getProject', socket.id);
         }
     });
 
     socket.on('updateProject', function(data) {
-        io.sockets.socket(data.session).emit('setProject', data.project);
+        io.sockets.socket(data.session).emit('setProject', data);
         console.log("Project layer!".red + data.project);
         console.log("Set Project");
     });

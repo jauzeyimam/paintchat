@@ -499,12 +499,60 @@ function selectPath(data) {
     }
 }
 
+/**********Adding/Removing Users********/
+/* --------disconnectedUser-----------
+ * delete users that leave from the
+ * lastPaths array
+ */
 function disconnectedUser(data) {
-    console.log("sessionId", data);
-    console.log("lastPaths before", lastPaths);
     delete lastPaths[data];
-    console.log("lastPaths after", lastPaths);
 }
+
+/* --------getProject--------------
+ * send lastPaths and project to a
+ * new user that just logged in
+ */
+function getProject(data) {
+    var tempPath = myPath;
+    var allPaths = lastPaths;
+    var myId = io.socket.sessionid;
+    allPaths[myId] = null;
+    if (myPath != null) {
+        allPaths[myId] = new Path(myPath.pathData);
+        allPaths[myId].strokeColor = myPath.strokeColor;
+        allPaths[myId].strokeWidth = myPath.strokeWidth;
+        allPaths[myId].fillColor = myPath.fillColor;
+        myPath.selected = false;
+        myPath = null;
+    }
+    for (key in allPaths) {
+        if (allPaths[key] != null) {
+            allPaths[key].data.sessionId = key;
+        }
+    }
+    var dataSend = {
+        project: project.exportJSON(),
+        session: data
+    }
+    myPath = tempPath;
+    return dataSend;
+}
+
+/* ------setProject----------------
+ * Update a new user's project based
+ * on data imported from the orignal
+ * user of this room
+ */
+function setProject(data) {
+    project.importJSON(data.project);
+    for (var i = 0; i < project.activeLayer.children.length; i++) {
+        if (project.activeLayer.children[i].data.sessionId != null) {
+            lastPaths[project.activeLayer.children[i].data.sessionId] = project.activeLayer.children[i];
+        }
+    }
+    view.draw();
+}
+
 /*********Sending this Users Path***********/
 
 /* --------emitPoint-----------
@@ -617,15 +665,12 @@ io.on('disconnectedUser', function(data) {
     disconnectedUser(data);
 });
 io.on('getProject', function(data) {
-	var dataSend = {
-		project: project.exportJSON(),
-		session: data
-	}
-	io.emit('updateProject', dataSend);
+    dataSend = getProject(data);
+    io.emit('updateProject', dataSend);
 
 });
 io.on('setProject', function(data) {
-	project.importJSON(data);
+    setProject(data);
 })
 
 /*-------Map Buttons to Functions----------*/
