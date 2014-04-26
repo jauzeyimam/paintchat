@@ -587,6 +587,7 @@ function emitPath(path) {
         fillColor: path.fillColor,
         // selected: path.selected
     };
+    myPath.bringToFront();
     io.emit('drawPath', data, sessionId);
 }
 
