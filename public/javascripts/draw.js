@@ -535,7 +535,9 @@ function getProject(data) {
         session: data
     }
     myPath = lastPaths[myId];
-    myPath.selected = selected;
+    if (myPath != null) {
+        myPath.selected = selected;
+    }
     delete lastPaths[myId];
     return dataSend;
 }
