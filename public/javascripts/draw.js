@@ -514,28 +514,29 @@ function disconnectedUser(data) {
  */
 function getProject(data) {
     var selected = myPath.selected;
-    var allPaths = lastPaths;
+    // var allPaths = lastPaths;
     var myId = io.socket.sessionid;
-    allPaths[myId] = null;
+    lastPaths[myId] = null;
     if (myPath != null) {
-        allPaths[myId] = new Path(myPath.pathData);
-        allPaths[myId].strokeColor = myPath.strokeColor;
-        allPaths[myId].strokeWidth = myPath.strokeWidth;
-        allPaths[myId].fillColor = myPath.fillColor;
+        lastPaths[myId] = new Path(myPath.pathData);
+        lastPaths[myId].strokeColor = myPath.strokeColor;
+        lastPaths[myId].strokeWidth = myPath.strokeWidth;
+        lastPaths[myId].fillColor = myPath.fillColor;
         myPath.remove();
         myPath = null;
     }
-    for (key in allPaths) {
-        if (allPaths[key] != null) {
-            allPaths[key].data.sessionId = key;
+    for (key in lastPaths) {
+        if (lastPaths[key] != null) {
+            lastPaths[key].data.sessionId = key;
         }
     }
     var dataSend = {
         project: project.exportJSON(),
         session: data
     }
-    myPath = allPaths[myId];
+    myPath = lastPaths[myId];
     myPath.selected = selected;
+    delete lastPaths[myId];
     return dataSend;
 }
 
