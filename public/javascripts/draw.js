@@ -342,9 +342,6 @@ selectionTool.onKeyDown = function(event) {
             myPath.position.y += 1;
             emitPath(myPath);
         }
-        if (event.key == '=' && event.modifiers.shift) {
-            emitMove
-        }
         view.draw();
     }
 }
