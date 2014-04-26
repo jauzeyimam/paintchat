@@ -513,7 +513,7 @@ function disconnectedUser(data) {
  * new user that just logged in
  */
 function getProject(data) {
-    var tempPath = myPath;
+    var selected = myPath.selected;
     var allPaths = lastPaths;
     var myId = io.socket.sessionid;
     allPaths[myId] = null;
@@ -522,7 +522,7 @@ function getProject(data) {
         allPaths[myId].strokeColor = myPath.strokeColor;
         allPaths[myId].strokeWidth = myPath.strokeWidth;
         allPaths[myId].fillColor = myPath.fillColor;
-        myPath.selected = false;
+        myPath.remove();
         myPath = null;
     }
     for (key in allPaths) {
@@ -534,7 +534,8 @@ function getProject(data) {
         project: project.exportJSON(),
         session: data
     }
-    myPath = tempPath;
+    myPath = allPaths[myId];
+    myPath.selected = selected;
     return dataSend;
 }
 
