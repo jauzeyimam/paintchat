@@ -86,8 +86,8 @@ canvas{
 .controls > #BW{
     border: none;
     background-color: #222222;
-    margin-bottom: 5px;
     overflow: hidden;
+    width: 130px;
     /*padding: 5px;
     text-align: center;
     width: 119px;
@@ -97,18 +97,25 @@ canvas{
     border: 1px solid #2F2F2F;
     background-color: #222222;
     overflow: hidden;
-    width: 60px;
+    width: 58px;
     height: 29px;
-    padding-right: 2px;
-    padding-left: 2px;
 }
-/*.controls > #BW #white{
+.controls > #BW #black{
     border: 1px solid #2F2F2F;
     background-color: #222222;
     overflow: hidden;
-    margin-left: 1px;
-    width: 50px;
-}*/
+    margin-right: 2px;
+    width: 58px;
+    height: 29px;
+}
+.controls > #BW #white{
+    border: 1px solid #2F2F2F;
+    background-color: #222222;
+    overflow: hidden;
+    margin-left: 2px;
+    width: 58px;
+    height: 29px;
+}
 .controls > div input {
     background-color: #121212;
     border: 1px solid #2F2F2F;
