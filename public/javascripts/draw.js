@@ -513,29 +513,32 @@ function disconnectedUser(data) {
  * new user that just logged in
  */
 function getProject(data) {
-    var selected = myPath.selected;
-    var allPaths = lastPaths;
+    var selected;
     var myId = io.socket.sessionid;
-    allPaths[myId] = null;
+    lastPaths[myId] = null;
     if (myPath != null) {
-        allPaths[myId] = new Path(myPath.pathData);
-        allPaths[myId].strokeColor = myPath.strokeColor;
-        allPaths[myId].strokeWidth = myPath.strokeWidth;
-        allPaths[myId].fillColor = myPath.fillColor;
+        lastPaths[myId] = new Path(myPath.pathData);
+        lastPaths[myId].strokeColor = myPath.strokeColor;
+        lastPaths[myId].strokeWidth = myPath.strokeWidth;
+        lastPaths[myId].fillColor = myPath.fillColor;
         myPath.remove();
+        selected = myPath.selected;
         myPath = null;
     }
-    for (key in allPaths) {
-        if (allPaths[key] != null) {
-            allPaths[key].data.sessionId = key;
+    for (key in lastPaths) {
+        if (lastPaths[key] != null) {
+            lastPaths[key].data.sessionId = key;
         }
     }
     var dataSend = {
         project: project.exportJSON(),
         session: data
     }
-    myPath = allPaths[myId];
-    myPath.selected = selected;
+    myPath = lastPaths[myId];
+    if (myPath != null) {
+        myPath.selected = selected;
+    }
+    delete lastPaths[myId];
     return dataSend;
 }
 
@@ -586,6 +589,7 @@ function emitPath(path) {
         fillColor: path.fillColor,
         // selected: path.selected
     };
+    myPath.bringToFront();
     io.emit('drawPath', data, sessionId);
 }
 
