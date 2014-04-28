@@ -128,7 +128,7 @@ io.sockets.on('connection', function(socket) {
     /*********Chat Functions**********/
     socket.on('message', function(message) {
         if (message == "&#x2F;help") {
-            var helpMessage = "After selecting: <br>Press 'c' to change line color<br>Press 'f' to toggle fill<br>Press 't' to increase thickness<br>Press 'Shift+T' to decrease thickness<br>Press 'd' to duplicate<br>Press 'Shift+D' or 'Backspace' or 'delete' to delete.";
+            var helpMessage = "After selecting:<br>User arrow keys or click and drag to move<br>Press 'c' to change line color<br>Press 'f' to toggle fill<br>Press 't' to increase thickness<br>Press 'Shift+T' to decrease thickness<br>Press 'd' to duplicate<br>Press 'Shift+D' or 'Backspace' or 'delete' to delete.";
             var data = {
                 'message': helpMessage,
                 pseudo: "<b>Server</b>"
