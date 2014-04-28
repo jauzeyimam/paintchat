@@ -1,6 +1,4 @@
 /**Javascript file conrolling drawing on canvas**/
-console.log(io.socket.sessionid);
-
 var canvas = document.getElementById("draw"); // Canvas element
 paper.view.viewSize = [canvas.offsetWidth, canvas.offsetHeight]; //Makes the input area same size as the canvas
 
@@ -203,24 +201,32 @@ function activateTextType() {
     textType.activate();
 }
 textType.onMouseDown = function(event) {
-    clearSelection();
-    if (event.point != null) {
-        myPath = new PointText({
-            point: event.point,
-            fontSize: 12,
-            fillColor: new Color($('#hexVal').val()),
-            content: 'Release Mouse to type here\nPress escape to stop typing',
-        });
+    if (document.activeElement != document.getElementById("messageInput")) {
+        clearSelection();
+        if (event.point != null) {
+            myPath = new PointText({
+                point: event.point,
+                fontSize: 12,
+                fillColor: new Color($('#hexVal').val()),
+                content: 'Release Mouse to type here\nPress escape to stop typing',
+            });
+        }
+        view.draw();
     }
-    view.draw();
 }
 textType.onMouseDrag = function(event) {
-    myPath.point = event.point;
+    if (document.activeElement != document.getElementById("messageInput")) {
+        myPath.point = event.point;
+    }
 }
 textType.onMouseUp = function(event) {
-    myPath.content = '';
-    myPath.selected = true;
-    emitText(myPath);
+    if (document.activeElement != document.getElementById("messageInput")) {
+        myPath.content = '';
+        myPath.selected = true;
+        emitText(myPath);
+    } else {
+        $('#messageInput').blur();
+    }
 }
 textType.onKeyDown = function(event) {
     if (myPath != null && document.activeElement != document.getElementById("messageInput")) {
@@ -307,7 +313,7 @@ selectionTool.onMouseDrag = function(event) {
 selectionTool.onKeyDown = function(event) {
     // event.preventDefault();
     if (myPath != null && document.activeElement != document.getElementById("messageInput")) {
-        if (event.key == 'delete' || event.key == 'backspace') {
+        if (event.key == 'delete' || event.key == 'backspace' || (event.key == 'd' && event.modifiers.shift)) {
             emitRemovePath();
             myPath.remove();
             myPath = null;
@@ -379,6 +385,7 @@ selectionTool.onKeyDown = function(event) {
                 }
             }
         }
+        event.stopPropagation();
         view.draw();
     }
 }

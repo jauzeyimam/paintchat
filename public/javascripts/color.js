@@ -123,7 +123,6 @@ $(function() {
             }
             $('#draw').fadeOut("slow", "linear");
             $('.colorpicker').fadeIn("slow", "linear");
-            console.log(oldValues);
             bCanPreview = true;
         }
     });

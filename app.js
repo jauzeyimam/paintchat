@@ -29,7 +29,7 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 app.get('/users', user.list);
-console.log("Users" + user.list);
+// console.log("Users" + user.list);
 // I think there is a better way to do this
 // app.get('/homepagetest', routes.homepagetest);
 app.get("/aboutus", function(req, res) {
@@ -38,7 +38,7 @@ app.get("/aboutus", function(req, res) {
 
 var server = http.createServer(app).listen(app.get('port'));
 var io = require('socket.io').listen(server, function() {
-    console.log("Express server listening on port " + app.get('port'));
+    // console.log("Express server listening on port " + app.get('port'));
 });
 
 var canvasActivity = {};
@@ -57,19 +57,19 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('connectLogin', function() {
         var clients = io.sockets.clients(socket.room);
-        console.log("Client 1 " + clients[0]);
-        console.log("Connect Login!".blue);
+        // console.log("Client 1 " + clients[0]);
+        // console.log("Connect Login!".blue);
         if (socket.room != null && socket.username != null && clients.length > 1) {
-            console.log("passed check 1");
-            console.log("Clients".red + clients[0].id + ", " + clients[clients.length - 1].id);
+            // console.log("passed check 1");
+            // console.log("Clients".red + clients[0].id + ", " + clients[clients.length - 1].id);
             io.sockets.socket(clients[0].id).emit('getProject', socket.id);
         }
     });
 
     socket.on('updateProject', function(data) {
         io.sockets.socket(data.session).emit('setProject', data);
-        console.log("Project layer!".red + data.project);
-        console.log("Set Project");
+        // console.log("Project layer!".red + data.project);
+        // console.log("Set Project");
     });
 
     socket.on('disconnect', function() {
@@ -88,7 +88,7 @@ io.sockets.on('connection', function(socket) {
         var oldname = data;
         socket.set('pseudo', data);
         socket.username = data;
-        console.log('Pseudo: ', data);
+        // console.log('Pseudo: ', data);
         var message = {
             'message': "Your username is " + data,
             pseudo: "<b>Server</b>"
@@ -110,6 +110,9 @@ io.sockets.on('connection', function(socket) {
         socket.broadcast.to(socket.room).emit('message', data);
     });
     socket.on('changePseudo', function(newName, oldName) {
+        var oldname = newName;
+        socket.set('pseudo', newName);
+        socket.username = newName;
         var message = {
             'message': "Your username is now " + newName + ".",
             pseudo: "<b>Server</b>"
@@ -125,14 +128,13 @@ io.sockets.on('connection', function(socket) {
     /*********Chat Functions**********/
     socket.on('message', function(message) {
         if (message == "&#x2F;help") {
-            var helpMessage = "After selecting: <br>Push 'c' to change Color<br>Push 'f' to fill<br>Push 't' to increase thickness<br>Push 'Shift+T' to decrease thickness<br>Push 'd' to duplicate<br>Push 'Shift+D' to delete.";
+            var helpMessage = "After selecting: <br>Press 'c' to change line color<br>Press 'f' to toggle fill<br>Press 't' to increase thickness<br>Press 'Shift+T' to decrease thickness<br>Press 'd' to duplicate<br>Press 'Shift+D' or 'Backspace' or 'delete' to delete.";
             var data = {
                 'message': helpMessage,
                 pseudo: "<b>Server</b>"
             }
             socket.emit('message', data);
-        }
-        else {
+        } else {
             var data = {
                 'message': message,
                 pseudo: "<b>" + socket.username + "</b>"
@@ -142,25 +144,25 @@ io.sockets.on('connection', function(socket) {
     });
     /******Draw Functions********/
     socket.on('endPath', function(data, session) {
-        // console.log("session " + session + " completed path:");
+        console.log("session " + session + " completed path:");
         socket.broadcast.to(socket.room).emit('endPath', data);
         //canvasActivity[socket.user] = 0;
     })
     socket.on('addPoint', function(data, session) {
-        //console.log("session " + session + " added:");
-        // console.log (data);
+        console.log("session " + session + " added:");
+        console.log(data);
         socket.broadcast.to(socket.room).emit('addPoint', data);
         // canvasActivity[socket.user] = 1;
     })
     socket.on('drawPath', function(data, session) {
-        //console.log("session " + session + " drew:");
-        //console.log(data);
+        console.log("session " + session + " drew:");
+        console.log(data);
         socket.broadcast.to(socket.room).emit('drawPath', data);
         // canvasActivity[socket.user] = 1;
     })
     socket.on('typeText', function(data, session) {
-        //console.log("session " + session + " drew:");
-        //console.log(data);
+        console.log("session " + session + " drew:");
+        console.log(data);
         socket.broadcast.to(socket.room).emit('typeText', data);
         // canvasActivity[socket.user] = 1;
     })
