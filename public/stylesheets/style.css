@@ -53,6 +53,36 @@ canvas{
 .shadowed-light{
 	box-shadow: 1px 1px 5px #888888;
 }
+
+.circular-image{
+    width:200px;
+    height:200px;
+    border-radius: 150px;
+    -webkit-border-radius: 150px;
+    -moz-border-radius: 150px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+    -moz-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+}
+
+.circular-image#jauzey-img{
+    background: url(/images/jauzey.PNG) no-repeat;
+}
+.circular-image#mark-img{
+    background: url(/images/mark.PNG) no-repeat;
+}
+.circular-image#nadeem-img{
+    background: url(/images/nadeem.PNG) no-repeat;
+}
+.circular-image#zander-img{
+    background: url(/images/zander.PNG) no-repeat;
+}
+
+.jumbotron{
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
 /* colorpicker styles */
 .colorpicker {
     background-color: #222222;
@@ -61,7 +91,7 @@ canvas{
     color: #FFFFFF;
     font-size: 12px;
     position: absolute;
-    width: 460px;
+    width: 464px;
 }
 #picker {
     cursor: crosshair;
@@ -83,11 +113,13 @@ canvas{
 .controls label {
     float: left;
 }
+
 .controls > #BW{
     border: none;
     background-color: #222222;
     overflow: hidden;
     width: 130px;
+    padding:0 !important;
     /*padding: 5px;
     text-align: center;
     width: 119px;
@@ -99,13 +131,16 @@ canvas{
     overflow: hidden;
     width: 58px;
     height: 29px;
+    margin:0;
+    padding:0;
+    float:left;
 }
 .controls > #BW #black{
     border: 1px solid #2F2F2F;
     background-color: #222222;
     overflow: hidden;
     margin-right: 2px;
-    width: 58px;
+    width: 63px;
     height: 29px;
 }
 .controls > #BW #white{
@@ -113,7 +148,7 @@ canvas{
     background-color: #222222;
     overflow: hidden;
     margin-left: 2px;
-    width: 58px;
+    width: 63px;
     height: 29px;
 }
 .controls > div input {
