@@ -79,8 +79,42 @@ canvas{
     overflow: hidden;
     padding: 5px;
 }
+
 .controls label {
     float: left;
+}
+.controls > #BW{
+    border: none;
+    background-color: #222222;
+    overflow: hidden;
+    width: 130px;
+    /*padding: 5px;
+    text-align: center;
+    width: 119px;
+    height: 34px;*/
+}
+.controls > #BW > button{
+    border: 1px solid #2F2F2F;
+    background-color: #222222;
+    overflow: hidden;
+    width: 58px;
+    height: 29px;
+}
+.controls > #BW #black{
+    border: 1px solid #2F2F2F;
+    background-color: #222222;
+    overflow: hidden;
+    margin-right: 2px;
+    width: 58px;
+    height: 29px;
+}
+.controls > #BW #white{
+    border: 1px solid #2F2F2F;
+    background-color: #222222;
+    overflow: hidden;
+    margin-left: 2px;
+    width: 58px;
+    height: 29px;
 }
 .controls > div input {
     background-color: #121212;
