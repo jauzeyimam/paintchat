@@ -1,4 +1,6 @@
 /**Javascript file conrolling drawing on canvas**/
+console.log(io.socket.sessionid);
+
 var canvas = document.getElementById("draw"); // Canvas element
 paper.view.viewSize = [canvas.offsetWidth, canvas.offsetHeight]; //Makes the input area same size as the canvas
 
@@ -304,6 +306,13 @@ selectionTool.onKeyDown = function(event) {
             myPath.strokeColor = new Color($('#hexVal').val());
             emitPath(myPath);
         }
+        if (event.key == 'd') {
+            emitSelectPath(myPath.firstSegment.point);
+            myPath.selected = false;
+            myPath = myPath.clone();
+            myPath.selected = true;
+            emitPath(myPath);
+        }
         if (event.key == 't') {
             emitRemovePath();
             if (event.modifiers.shift) {
@@ -333,6 +342,7 @@ selectionTool.onKeyDown = function(event) {
             myPath.position.y += 1;
             emitPath(myPath);
         }
+        view.draw();
     }
 }
 
@@ -489,6 +499,64 @@ function selectPath(data) {
     }
 }
 
+/**********Adding/Removing Users********/
+/* --------disconnectedUser-----------
+ * delete users that leave from the
+ * lastPaths array
+ */
+function disconnectedUser(data) {
+    delete lastPaths[data];
+}
+
+/* --------getProject--------------
+ * send lastPaths and project to a
+ * new user that just logged in
+ */
+function getProject(data) {
+    var selected;
+    var myId = io.socket.sessionid;
+    lastPaths[myId] = null;
+    if (myPath != null) {
+        lastPaths[myId] = new Path(myPath.pathData);
+        lastPaths[myId].strokeColor = myPath.strokeColor;
+        lastPaths[myId].strokeWidth = myPath.strokeWidth;
+        lastPaths[myId].fillColor = myPath.fillColor;
+        myPath.remove();
+        selected = myPath.selected;
+        myPath = null;
+    }
+    for (key in lastPaths) {
+        if (lastPaths[key] != null) {
+            lastPaths[key].data.sessionId = key;
+        }
+    }
+    var dataSend = {
+        project: project.exportJSON(),
+        session: data
+    }
+    myPath = lastPaths[myId];
+    if (myPath != null) {
+        myPath.selected = selected;
+    }
+    delete lastPaths[myId];
+    return dataSend;
+}
+
+/* ------setProject----------------
+ * Update a new user's project based
+ * on data imported from the orignal
+ * user of this room
+ */
+function setProject(data) {
+    project.importJSON(data.project);
+    for (var i = 0; i < project.activeLayer.children.length; i++) {
+        if (project.activeLayer.children[i].data.sessionId != null) {
+            lastPaths[project.activeLayer.children[i].data.sessionId] = project.activeLayer.children[i];
+        }
+    }
+    view.draw();
+}
+
 /*********Sending this Users Path***********/
 
 /* --------emitPoint-----------
@@ -521,6 +589,7 @@ function emitPath(path) {
         fillColor: path.fillColor,
         // selected: path.selected
     };
+    myPath.bringToFront();
     io.emit('drawPath', data, sessionId);
 }
 
@@ -597,6 +666,17 @@ io.on('removePath', function(data) {
 io.on('selectPath', function(data) {
     selectPath(data);
 });
+io.on('disconnectedUser', function(data) {
+    disconnectedUser(data);
+});
+io.on('getProject', function(data) {
+    dataSend = getProject(data);
+    io.emit('updateProject', dataSend);
+
+});
+io.on('setProject', function(data) {
+    setProject(data);
+})
 
 /*-------Map Buttons to Functions----------*/
 $(function() {

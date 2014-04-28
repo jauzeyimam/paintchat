@@ -7,7 +7,7 @@ var routes = require('./routes');
 var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
-
+var colors = require('colors');
 var app = express();
 
 // all environments
@@ -41,15 +41,46 @@ var io = require('socket.io').listen(server, function() {
     console.log("Express server listening on port " + app.get('port'));
 });
 
+var canvasActivity = {};
+var canvasActive = 0;
+
+for (var k in canvasActivity) {
+    if (canvasActivity[k] == 1 || canvasActive == 1) {
+        canvasActive = 1;
+    }
+}
+
+var project;
+
 // A user connects to the server (opens a socket)
 io.sockets.on('connection', function(socket) {
+
+    socket.on('connectLogin', function() {
+        var clients = io.sockets.clients(socket.room);
+        console.log("Client 1 " + clients[0]);
+        console.log("Connect Login!".blue);
+        if (socket.room != null && socket.username != null && clients.length > 1) {
+            console.log("passed check 1");
+            console.log("Clients".red + clients[0].id + ", " + clients[clients.length - 1].id);
+            io.sockets.socket(clients[0].id).emit('getProject', socket.id);
+        }
+    });
+
+    socket.on('updateProject', function(data) {
+        io.sockets.socket(data.session).emit('setProject', data);
+        console.log("Project layer!".red + data.project);
+        console.log("Set Project");
+    });
 
     socket.on('disconnect', function() {
         var data = {
             'message': socket.username + " disconnected",
             pseudo: "<b>Server</b>"
         }
-        socket.broadcast.to(socket.room).emit('message', data);
+        if (socket.room != null) {
+            socket.broadcast.to(socket.room).emit('message', data);
+            socket.broadcast.to(socket.room).emit('disconnectedUser', socket.id);
+        }
     });
 
     /*********Login Functions**********/
@@ -106,21 +137,25 @@ io.sockets.on('connection', function(socket) {
     socket.on('endPath', function(data, session) {
         // console.log("session " + session + " completed path:");
         socket.broadcast.to(socket.room).emit('endPath', data);
+        //canvasActivity[socket.user] = 0;
     })
     socket.on('addPoint', function(data, session) {
         //console.log("session " + session + " added:");
         // console.log (data);
         socket.broadcast.to(socket.room).emit('addPoint', data);
+        // canvasActivity[socket.user] = 1;
     })
     socket.on('drawPath', function(data, session) {
         //console.log("session " + session + " drew:");
         //console.log(data);
         socket.broadcast.to(socket.room).emit('drawPath', data);
+        // canvasActivity[socket.user] = 1;
     })
     socket.on('typeText', function(data, session) {
         //console.log("session " + session + " drew:");
         //console.log(data);
         socket.broadcast.to(socket.room).emit('typeText', data);
+        // canvasActivity[socket.user] = 1;
     })
     socket.on('removePath', function(data, session) {
         socket.broadcast.to(socket.room).emit('removePath', data);
