@@ -43,7 +43,9 @@ block paintroom
 						div#BW
 							button#black Black
 							button#white White
-						button#confirm Confirm
+						div#CC
+							button#confirm Confirm
+							button#cancel Cancel
 			button#freeDraw.btn.btn-default.active(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click and hold to draw freely") Free
 			button#lineDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click and drag to draw lines") Line
 			button#rectangleDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click and drag to draw rectangles") Rectangle
@@ -51,7 +53,7 @@ block paintroom
 			button#ellipseDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click and drag to draw ellipses") Ellipse
 			button#starDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click and drag to draw stars") Star
 			button#textType.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click canvas to begin typing. Press ESCAPE to end typing.") Text
-			button#selectionTool.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click edge of shape to select. Use mouse to drag. Push C to change color. Push F to fill. Push T to increase thickness. Push shift+T to decrease thickness. Push D to duplicate. Push DEL to delete.") Select
+			button#selectionTool.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click on a path/text object to select and edit.\n For editing options type '/help' in the Chat.") Select
 			button#saveButton.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Download this image")
 				a(href="" id="save" download="saveImage" style="text-decoration:none;color:inherit;") Save
 		div.col-md-9

@@ -11,14 +11,14 @@ function addMessage(msg, pseudo) {
 function sentMessage() {
     var message = $('#messageInput').val();
     var safeMessage = sanitizeMessage(message);
-    console.log(safeMessage);
+    // console.log(safeMessage);
 
     if (safeMessage.length > 0 && safeMessage.length < 141) {
         io.emit('message', safeMessage);
         addMessage(safeMessage, "<b>Me</b>", new Date().toISOString(), true);
         $('#messageInput').val('');
     } else {
-        console.log("Unsafe input.");
+        // console.log("Unsafe input.");
     }
 }
 
@@ -47,7 +47,7 @@ function setInformation() {
     var name = $('#pseudo').val();
     var room = $('#roomname').val();
     var pass = sanitizeLogin(name) && sanitizeLogin(room);
-    console.log(pass + " | pseudo: " + name + " room: " + room);
+    // console.log(pass + " | pseudo: " + name + " room: " + room);
 
     if (pass) {
         io.emit('setPseudo', name);
@@ -64,12 +64,12 @@ function setInformation() {
         updateChatArea(room, name);
     } else {
         alert("Invalid psuedo or roomname. \n\n-only letters and numbers\n-no blank fields\n-no fields longer than 15 characters\n-use underscore for spaces");
-        console.log("Invalid psuedo or roomname. \n\n-only letters and numbers\n-no blank fields\n-no fields longer than 15 characters\n-use underscore for spaces");
+        // console.log("Invalid psuedo or roomname. \n\n-only letters and numbers\n-no blank fields\n-no fields longer than 15 characters\n-use underscore for spaces");
     }
 }
 
 function changeRoom() {
-    console.log("changing room");
+    // console.log("changing room");
     var oldName = $('#pseudo').val();
     document.cookie = "username=" + oldName;
     window.location = "/";
@@ -82,7 +82,7 @@ function changePseudoModal() {
     var pass = sanitizeLogin(oldName) && sanitizeLogin(newName);
     if (pass) {
         $('#pseudo').val(newName);
-        console.log("changePseudoModal: ", document.activeElement);
+        // console.log("changePseudoModal: ", document.activeElement);
         io.emit('changePseudo', newName, oldName);
         updateChatArea(room, newName);
     } else if (oldName == "") {
@@ -93,7 +93,7 @@ function changePseudoModal() {
 }
 
 function updateChatArea(room, name) {
-    console.log("updateChatArea: " + room + ", " + name);
+    // console.log("updateChatArea: " + room + ", " + name);
     $('#roomnamedisplay').text(room);
     $('#pseudonamedisplay').text(name);
 }
@@ -116,22 +116,22 @@ io.on('message', function(data) {
 });
 
 function updateFocus(id) {
-    console.log("Update focus", id);
+    // console.log("Update focus", id);
     document.getElementById(id).focus();
 }
 
 function getUsernameCookie() {
     var cUsername = document.cookie;
-    console.log("cUsername = " + cUsername);
+    // console.log("cUsername = " + cUsername);
     var username = cUsername.split('=');
     username = username[1];
     $('#pseudo').val(username);
-    console.log("username::" + username);
+    // console.log("username::" + username);
     if (username == "" || typeof username === 'undefined') {
-        console.log("True");
+        // console.log("True");
         document.getElementById("pseudo").focus();
     } else {
-        console.log("False");
+        // console.log("False");
         document.getElementById("roomname").focus();
     }
 }
@@ -148,7 +148,7 @@ function deleteAllCookies() {
 }
 
 $(document).ready(function() {
-    console.log("Document is ready.");
+    // console.log("Document is ready.");
     canvas = document.getElementById("draw");
     width = canvas.offsetWidth;
     height = canvas.offsetHeight;
@@ -166,9 +166,12 @@ $(document).ready(function() {
             sentMessage();
         }
     });
-    $("#pseudomodal").keyup(function(e) {
+    $("#pseudomodal").keypress(function(e) {
         if (e.keyCode == 13) {
-            alert("You pushed enter. Pushing enter here does bad things. Please don't push enter until we fix this bug, which has actually become somewhat of a difficult task.");
+            // console.log(e);
+            // alert("You pushed enter. Pushing enter here does bad things. Please don't push enter until we fix this bug, which has actually become somewhat of a difficult task.");
+            changePseudoModal();
+            $('#changepseudomodal').modal('hide');
             e.preventDefault();
             e.stopPropagation();
         }

@@ -1,6 +1,4 @@
 /**Javascript file conrolling drawing on canvas**/
-console.log(io.socket.sessionid);
-
 var canvas = document.getElementById("draw"); // Canvas element
 paper.view.viewSize = [canvas.offsetWidth, canvas.offsetHeight]; //Makes the input area same size as the canvas
 
@@ -203,25 +201,38 @@ function activateTextType() {
     textType.activate();
 }
 textType.onMouseDown = function(event) {
-    myPath = new PointText({
-        point: event.point,
-        fontSize: 12,
-        fillColor: new Color($('#hexVal').val()),
-        content: 'Release Mouse to type here\nPress escape to stop typing'
-    });
-    view.draw();
+    if (document.activeElement != document.getElementById("messageInput")) {
+        clearSelection();
+        if (event.point != null) {
+            myPath = new PointText({
+                point: event.point,
+                fontSize: 12,
+                fillColor: new Color($('#hexVal').val()),
+                content: 'Release Mouse to type here\nPress escape to stop typing',
+            });
+        }
+        view.draw();
+    }
 }
 textType.onMouseDrag = function(event) {
-    myPath.point = event.point;
+    if (document.activeElement != document.getElementById("messageInput")) {
+        myPath.point = event.point;
+    }
 }
 textType.onMouseUp = function(event) {
-    myPath.content = '';
-    emitText(myPath);
+    if (document.activeElement != document.getElementById("messageInput")) {
+        myPath.content = '';
+        myPath.selected = true;
+        emitText(myPath);
+    } else {
+        $('#messageInput').blur();
+    }
 }
 textType.onKeyDown = function(event) {
     if (myPath != null && document.activeElement != document.getElementById("messageInput")) {
         emitRemovePath();
         if (event.key == 'escape') {
+            myPath.selected = false;
             myPath = null;
         } else if (event.key == 'space') {
             myPath.content = myPath.content + ' ';
@@ -232,6 +243,7 @@ textType.onKeyDown = function(event) {
         } else if (event.key.length > 1) {
             //don't show control, alt, home, end etc.
         } else {
+            myPath.selected = true;
             if (event.modifiers.shift) {
                 var c = event.key.toUpperCase();
                 myPath.content = myPath.content + c;
@@ -239,8 +251,10 @@ textType.onKeyDown = function(event) {
                 myPath.content = myPath.content + event.key;
             }
         }
-        myPath.fillColor = new Color($('#hexVal').val());
-        emitText(myPath);
+        if (myPath != null) {
+            myPath.fillColor = new Color($('#hexVal').val());
+            emitText(myPath);
+        }
     }
     view.draw();
 }
@@ -248,19 +262,22 @@ textType.onKeyDown = function(event) {
 var hitOptions = {
     // segments: true,
     stroke: true,
-    // fill: true,
+    fill: true,
     tolerance: 5
 };
 
 function activateSelectionTool() {
     selectionTool.activate();
 }
+//Problem: selecting a path by stroke doesn't work with emitSelectPath(myPath.position)
+//Selectinag a path by fill doesn't work with emitSelectPath(myPath.firstSegment.point)
+//Selecting a path by stroke doesn't work for point-text objects
+//Selecting a path by fill doesn't work for unfilled objects...
 selectionTool.onMouseDown = function(event) {
     var hitResult = project.hitTest(event.point, hitOptions);
     if (hitResult != myPath && myPath != null && myPath.selected) {
-        // emitSelectPath(myPath.firstSegment.point);
         myPath.selected = false;
-        emitSelectPath(myPath.firstSegment.point);
+        emitSelectPath(getPoint(myPath));
         myPath = null;
     }
     if (hitResult != null) {
@@ -272,83 +289,129 @@ selectionTool.onMouseDown = function(event) {
         if (notSelected) {
             myPath = hitResult.item;
             myPath.selected = true;
-            emitSelectPath(hitResult.point);
+            if (hitResult.type == 'fill') {
+                emitSelectPath(myPath.position);
+            } else if (hitResult.type == 'stroke') {
+                emitSelectPath(myPath.firstSegment.point);
+
+            }
         }
     }
 }
 selectionTool.onMouseDrag = function(event) {
     if (myPath != null && myPath.selected) {
-        myPath.position += event.delta;
         emitRemovePath();
-        emitPath(myPath);
+        if (myPath.type == 'path') {
+            myPath.position += event.delta;
+            emitPath(myPath);
+        } else if (myPath.type == 'point-text') {
+            moveText(event.delta);
+            emitText(myPath);
+        }
     }
 }
 selectionTool.onKeyDown = function(event) {
     // event.preventDefault();
     if (myPath != null && document.activeElement != document.getElementById("messageInput")) {
-        if (event.key == 'delete' || event.key == 'backspace') {
+        if (event.key == 'delete' || event.key == 'backspace' || (event.key == 'd' && event.modifiers.shift)) {
             emitRemovePath();
             myPath.remove();
             myPath = null;
-        }
-        if (event.key == 'f') {
-            var color = new Color($('#hexVal').val());
-            emitRemovePath();
-            if (myPath.fillColor != color) {
-                myPath.fillColor = color;
-            } else {
-                myPath.fillColor = null;
+        } else {
+            var emitFlag = false;
+            var moveFlag = false;
+            var delta;
+            if (event.key == 'f') {
+                emitFlag = true;
+                var color = new Color($('#hexVal').val());
+                emitRemovePath();
+                if (myPath.fillColor != color) {
+                    myPath.fillColor = color;
+                } else {
+                    myPath.fillColor = null;
+                }
+            } else if (event.key == 'c') {
+                emitFlag = true;
+                emitRemovePath();
+                myPath.strokeColor = new Color($('#hexVal').val());
+            } else if (event.key == 'd') {
+                emitFlag = true;
+                emitSelectPath(myPath.position);
+                myPath.selected = false;
+                myPath = myPath.clone();
+                myPath.selected = true;
+            } else if (event.key == 't') {
+                emitFlag = true;
+                emitRemovePath();
+                if (event.modifiers.shift) {
+                    myPath.strokeWidth -= 1;
+                } else {
+                    myPath.strokeWidth += 1;
+                }
+            } else if (event.key == 'up') {
+                emitFlag = true;
+                emitRemovePath();
+                moveFlag = true;
+                delta = new Point(0, -1);
+            } else if (event.key == 'right') {
+                emitFlag = true;
+                emitRemovePath();
+                moveFlag = true;
+                delta = new Point(1, 0);
+            } else if (event.key == 'left') {
+                emitFlag = true;
+                emitRemovePath();
+                moveFlag = true;
+                delta = new Point(-1, 0);
+            } else if (event.key == 'down') {
+                emitFlag = true;
+                emitRemovePath();
+                moveFlag = true;
+                delta = new Point(0, 1);
             }
-            emitPath(myPath);
-        }
-        if (event.key == 'c') {
-            emitRemovePath();
-            myPath.strokeColor = new Color($('#hexVal').val());
-            emitPath(myPath);
-        }
-        if (event.key == 'd') {
-            emitSelectPath(myPath.firstSegment.point);
-            myPath.selected = false;
-            myPath = myPath.clone();
-            myPath.selected = true;
-            emitPath(myPath);
-        }
-        if (event.key == 't') {
-            emitRemovePath();
-            if (event.modifiers.shift) {
-                myPath.strokeWidth -= 1;
-            } else {
-                myPath.strokeWidth += 1;
+            if (moveFlag) {
+                if (myPath.type == 'path') {
+                    myPath.translate(delta);
+                }
+                if (myPath.type == 'point-text') {
+                    moveText(delta);
+                }
             }
-            emitPath(myPath);
+            if (emitFlag == true) {
+                if (myPath.type == 'path') {
+                    emitPath(myPath);
+                } else if (myPath.type == 'point-text') {
+                    emitText(myPath);
+                }
+            }
         }
-        if (event.key == 'up') {
-            emitRemovePath();
-            myPath.position.y -= 1;
-            emitPath(myPath);
-        }
-        if (event.key == 'right') {
-            emitRemovePath();
-            myPath.position.x += 1;
-            emitPath(myPath);
-        }
-        if (event.key == 'left') {
-            emitRemovePath();
-            myPath.position.x -= 1;
-            emitPath(myPath);
-        }
-        if (event.key == 'down') {
-            emitRemovePath();
-            myPath.position.y += 1;
-            emitPath(myPath);
-        }
+        event.stopPropagation();
         view.draw();
     }
 }
 
+/*********MoveText*********
+ * moves text without separating
+ * text and bound box, circumvents
+ * bug in Paper.js. Text should be
+ * in myPath when function is
+ * called
+ */
+function moveText(delta) {
+    var text = {
+        point: myPath.point + delta,
+        fontSize: myPath.fontSize,
+        fillColor: new Color($('#hexVal').val()),
+        content: myPath.content,
+        selected: myPath.selected
+    }
+    myPath.remove();
+    myPath = new PointText(text);
+}
+
 function clearSelection() {
     if (myPath != null) {
-        emitSelectPath(myPath.firstSegment.point);
+        emitSelectPath(myPath.position);
         myPath.selected = false;
         myPath = null;
     }
@@ -419,6 +482,21 @@ function randomColor() {
     };
 }
 
+/*-----------Get Point-----------
+ * returns a point on the path for both
+ * point text objects and path objects
+ * used primarily for emitSelectPath()
+ * when the object being emitted could
+ * either be a path or a point text
+ */
+function getPoint(path) {
+    if (path.type == 'path') {
+        return path.firstSegment.point;
+    } else if (path.type == 'point-text') {
+        return path.position;
+    }
+}
+
 /*****Processing Other Users Path*******/
 
 /*-------------addPoint-----------------
@@ -451,7 +529,12 @@ function drawPath(data) {
     lastPaths[data.user].strokeColor = data.color;
     lastPaths[data.user].strokeWidth = data.strokeWidth;
     lastPaths[data.user].fillColor = data.fillColor;
-    // lastPaths[data.user].selected = data.selected;
+    lastPaths[data.user].selected = data.selected;
+    if (lastPaths[data.user].selected) {
+        lastPaths[data.user].selectedColor = 'red';
+    } else {
+        lastPaths[data.user].selectedColor = project.activeLayer.selectedColor;
+    }
     view.draw();
 }
 
@@ -466,8 +549,11 @@ function typeText(data) {
         point: new Point(data.x, data.y),
         fontSize: data.fontSize,
         fillColor: new Color(data.colorVal),
-        content: data.content
+        content: data.content,
+        selected: data.selected,
+        selectedColor: 'red'
     });
+
     view.draw();
 }
 
@@ -493,8 +579,14 @@ function selectPath(data) {
     if (hitResult != null) {
         if (lastPaths[data.user] != hitResult.item) {
             lastPaths[data.user] = hitResult.item;
+            hitResult.item.selectedColor = 'red';
+            hitResult.item.selected = true;
+            view.draw();
         } else {
+            hitResult.item.selectedColor = project.activeLayer.selectedColor;
+            hitResult.item.selected = false;
             lastPaths[data.user] = null;
+            view.draw();
         }
     }
 }
@@ -513,16 +605,28 @@ function disconnectedUser(data) {
  * new user that just logged in
  */
 function getProject(data) {
-    var selected;
     var myId = io.socket.sessionid;
     lastPaths[myId] = null;
     if (myPath != null) {
-        lastPaths[myId] = new Path(myPath.pathData);
-        lastPaths[myId].strokeColor = myPath.strokeColor;
-        lastPaths[myId].strokeWidth = myPath.strokeWidth;
-        lastPaths[myId].fillColor = myPath.fillColor;
+        if (myPath.type == 'path') {
+            lastPaths[myId] = new Path(myPath.pathData);
+            lastPaths[myId].strokeColor = myPath.strokeColor;
+            lastPaths[myId].strokeWidth = myPath.strokeWidth;
+            lastPaths[myId].fillColor = myPath.fillColor;
+            lastPaths[myId].selected = myPath.selected;
+        } else if (myPath.type == 'point-text') {
+            lastPaths[myId] = new PointText({
+                point: myPath.point,
+                fontSize: myPath.fontSize,
+                fillColor: myPath.fillColor,
+                content: myPath.content,
+                selected: myPath.selected
+            });
+        }
+        if (lastPaths[myId].selected) {
+            lastPaths[myId].selectedColor = 'red';
+        }
         myPath.remove();
-        selected = myPath.selected;
         myPath = null;
     }
     for (key in lastPaths) {
@@ -535,8 +639,8 @@ function getProject(data) {
         session: data
     }
     myPath = lastPaths[myId];
-    if (myPath != null) {
-        myPath.selected = selected;
+    if (myPath != null && myPath.selected) {
+        myPath.selectedColor = project.activeLayer.selectedColor;
     }
     delete lastPaths[myId];
     return dataSend;
@@ -587,7 +691,7 @@ function emitPath(path) {
         strokeWidth: path.strokeWidth,
         user: sessionId,
         fillColor: path.fillColor,
-        // selected: path.selected
+        selected: path.selected
     };
     myPath.bringToFront();
     io.emit('drawPath', data, sessionId);
@@ -606,6 +710,7 @@ function emitText(text) {
         y: text.point.y,
         fontSize: text.fontSize,
         content: text.content,
+        selected: text.selected,
         colorVal: $('#hexVal').val(),
         user: sessionId
     };

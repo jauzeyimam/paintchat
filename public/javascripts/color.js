@@ -10,7 +10,8 @@
  */
 
 $(function() {
-    var bCanPreview = true; // can preview
+    var bCanPreview = false; // can preview
+    var oldValues = null; // oldValues for cancel button
 
     // create canvas and context objects
     var canvas = document.getElementById('picker');
@@ -112,9 +113,18 @@ $(function() {
         $('#rVal').focus();
     });
     $('.preview').click(function(e) { // preview click
-        $('#draw').fadeOut("slow", "linear");
-        $('.colorpicker').fadeIn("slow", "linear");
-        bCanPreview = true;
+        if (!bCanPreview) {
+            oldValues = {
+                hexVal: $('#hexVal').val(),
+                rVal: $('#rVal').val(),
+                gVal: $('#gVal').val(),
+                bVal: $('#bVal').val(),
+                rgbVal: $('#rgbVal').val(),
+            }
+            $('#draw').fadeOut("slow", "linear");
+            $('.colorpicker').fadeIn("slow", "linear");
+            bCanPreview = true;
+        }
     });
     $('#picker').click(function(e) { // click event handler
         $('.colorpicker').fadeOut("slow", "linear");
@@ -130,6 +140,20 @@ $(function() {
         } else {
             alert("Make sure to press Enter after changing the fields. Make sure all fields contain valid values.   ");
         }
+        e.stopPropagation();
+    });
+    $('#cancel').click(function(e) {
+        if (oldValues != null) {
+            $('#hexVal').val(oldValues.hexVal);
+            $('#rVal').val(oldValues.rVal);
+            $('#gVal').val(oldValues.gVal);
+            $('#bVal').val(oldValues.bVal);
+            $('#rgbVal').val(oldValues.rgbVal);
+            $('.preview').css('backgroundColor', $('#hexVal').val());
+        }
+        $('.colorpicker').fadeOut("slow", "linear");
+        $('#draw').fadeIn("slow", "linear");
+        bCanPreview = false;
         e.stopPropagation();
     });
     $('#black').click(function(e) {
