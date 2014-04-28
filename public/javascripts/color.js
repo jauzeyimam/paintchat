@@ -132,6 +132,30 @@ $(function() {
         }
         e.stopPropagation();
     });
+    $('#black').click(function(e) {
+        //update preview color
+        var pixelColor = "rgb(0, 0, 0)";
+        $('.preview').css('backgroundColor', pixelColor);
+        $('#hexVal').val('#000000');
+
+        //update controls
+        $('#rVal').val('0');
+        $('#gVal').val('0');
+        $('#bVal').val('0');
+        $('#rgbVal').val('0, 0, 0');
+    });
+    $('#white').click(function(e) {
+        //update preview color
+        var pixelColor = "rgb(255, 255, 255)";
+        $('.preview').css('backgroundColor', pixelColor);
+        $('#hexVal').val('#FFFFFF');
+
+        //update controls
+        $('#rVal').val('255');
+        $('#gVal').val('255');
+        $('#bVal').val('255');
+        $('#rgbVal').val('255, 255, 255');
+    });
 
     function isValidHex(str) {
         if (str.charAt(0) != '#' || isNaN(parseInt(str.substr(1, str.length), 16)) || str.length != 7) {
