@@ -313,6 +313,8 @@ selectionTool.onKeyDown = function(event) {
             myPath = null;
         } else {
             var emitFlag = false;
+            var moveFlag = false;
+            var delta;
             if (event.key == 'f') {
                 emitFlag = true;
                 var color = new Color($('#hexVal').val());
@@ -343,19 +345,31 @@ selectionTool.onKeyDown = function(event) {
             } else if (event.key == 'up') {
                 emitFlag = true;
                 emitRemovePath();
-                moveText(new Point(0, -1));
+                moveFlag = true;
+                delta = new Point(0, -1);
             } else if (event.key == 'right') {
                 emitFlag = true;
                 emitRemovePath();
-                moveText(new Point(1, 0));
+                moveFlag = true;
+                delta = new Point(1, 0);
             } else if (event.key == 'left') {
                 emitFlag = true;
                 emitRemovePath();
-                moveText(new Point(-1, 0));
+                moveFlag = true;
+                delta = new Point(-1, 0);
             } else if (event.key == 'down') {
                 emitFlag = true;
                 emitRemovePath();
-                moveText(new Point(0, 1));
+                moveFlag = true;
+                delta = new Point(0, 1);
+            }
+            if (moveFlag) {
+                if (myPath.type == 'path') {
+                    myPath.translate(delta);
+                }
+                if (myPath.type == 'point-text') {
+                    moveText(delta);
+                }
             }
             if (emitFlag == true) {
                 if (myPath.type == 'path') {
