@@ -255,6 +255,8 @@ textType.onKeyDown = function(event) {
             myPath.fillColor = new Color($('#hexVal').val());
             emitText(myPath);
         }
+        event.preventDefault();
+        event.stopPropagation();
     }
     view.draw();
 }
@@ -597,6 +599,10 @@ function selectPath(data) {
  * lastPaths array
  */
 function disconnectedUser(data) {
+    if (lastPath[data].selected) {
+        lastPaths[data].selected = false;
+        lastPaths[data].selectedColor = project.activeLayer.selectedColor;
+    }
     delete lastPaths[data];
 }
 
