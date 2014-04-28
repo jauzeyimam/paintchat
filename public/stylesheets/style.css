@@ -91,7 +91,7 @@ canvas{
     color: #FFFFFF;
     font-size: 12px;
     position: absolute;
-    width: 460px;
+    width: 464px;
 }
 #picker {
     cursor: crosshair;
@@ -113,11 +113,13 @@ canvas{
 .controls label {
     float: left;
 }
+
 .controls > #BW{
     border: none;
     background-color: #222222;
     overflow: hidden;
     width: 130px;
+    padding:0 !important;
     /*padding: 5px;
     text-align: center;
     width: 119px;
@@ -129,13 +131,16 @@ canvas{
     overflow: hidden;
     width: 58px;
     height: 29px;
+    margin:0;
+    padding:0;
+    float:left;
 }
 .controls > #BW #black{
     border: 1px solid #2F2F2F;
     background-color: #222222;
     overflow: hidden;
     margin-right: 2px;
-    width: 58px;
+    width: 63px;
     height: 29px;
 }
 .controls > #BW #white{
@@ -143,7 +148,7 @@ canvas{
     background-color: #222222;
     overflow: hidden;
     margin-left: 2px;
-    width: 58px;
+    width: 63px;
     height: 29px;
 }
 .controls > div input {
