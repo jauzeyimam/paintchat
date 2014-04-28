@@ -115,8 +115,6 @@ io.on('message', function(data) {
     addMessage(data['message'], data['pseudo']);
 });
 
-io.on('')
-
 function updateFocus(id) {
     console.log("Update focus", id);
     document.getElementById(id).focus();

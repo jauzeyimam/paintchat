@@ -40,17 +40,20 @@ block paintroom
 						div
 							label HEX
 							input#hexVal(type='text')
+						div#BW
+							button#black Black
+							button#white White
 						button#confirm Confirm
-			button#freeDraw.btn.btn-default.active(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Free
-			button#lineDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Line
-			button#rectangleDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Rectangle
-			button#circleDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Circle
-			button#ellipseDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Ellipse
-			button#starDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Star
-			button#textType.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Text
-			button#selectionTool.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip") Select
-			button#saveButton.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Edit this to change tooltip")
-				a(href="" id="save" download="saveImage" style="text-decoration:none;color:black;") Save
+			button#freeDraw.btn.btn-default.active(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click and hold to draw freely") Free
+			button#lineDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click and drag to draw lines") Line
+			button#rectangleDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click and drag to draw rectangles") Rectangle
+			button#circleDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click and drag to draw circles") Circle
+			button#ellipseDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click and drag to draw ellipses") Ellipse
+			button#starDraw.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click and drag to draw stars") Star
+			button#textType.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click canvas to begin typing. Press ESCAPE to end typing.") Text
+			button#selectionTool.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Click edge of shape to select. Use mouse to drag. Push C to change color. Push F to fill. Push T to increase thickness. Push shift+T to decrease thickness. Push D to duplicate. Push DEL to delete.") Select
+			button#saveButton.btn.btn-default(rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Download this image")
+				a(href="" id="save" download="saveImage" style="text-decoration:none;color:inherit;") Save
 		div.col-md-9
 			canvas#draw.shadowed-light(style="width:100%; height:500px; ")
 			img(id="saveImage" style="display:none")

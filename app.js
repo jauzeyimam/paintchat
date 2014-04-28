@@ -32,8 +32,8 @@ app.get('/users', user.list);
 console.log("Users" + user.list);
 // I think there is a better way to do this
 // app.get('/homepagetest', routes.homepagetest);
-app.get("/homepagetest", function(req, res) {
-    res.render("homepagetest")
+app.get("/aboutus", function(req, res) {
+    res.render("aboutus.jade");
 });
 
 var server = http.createServer(app).listen(app.get('port'));
@@ -124,14 +124,21 @@ io.sockets.on('connection', function(socket) {
 
     /*********Chat Functions**********/
     socket.on('message', function(message) {
-        socket.get('pseudo', function(error, name) {
+        if (message == "&#x2F;help") {
+            var helpMessage = "After selecting: <br>Push 'c' to change Color<br>Push 'f' to fill<br>Push 't' to increase thickness<br>Push 'Shift+T' to decrease thickness<br>Push 'd' to duplicate<br>Push 'Shift+D' to delete.";
+            var data = {
+                'message': helpMessage,
+                pseudo: "<b>Server</b>"
+            }
+            socket.emit('message', data);
+        }
+        else {
             var data = {
                 'message': message,
-                pseudo: "<b>" + name + "</b>"
+                pseudo: "<b>" + socket.username + "</b>"
             };
             socket.broadcast.to(socket.room).emit('message', data);
-            console.log("user " + name + " send this : " + message);
-        })
+        }
     });
     /******Draw Functions********/
     socket.on('endPath', function(data, session) {
