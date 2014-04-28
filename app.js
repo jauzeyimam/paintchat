@@ -32,8 +32,8 @@ app.get('/users', user.list);
 console.log("Users" + user.list);
 // I think there is a better way to do this
 // app.get('/homepagetest', routes.homepagetest);
-app.get("/homepagetest", function(req, res) {
-    res.render("homepagetest")
+app.get("/aboutus", function(req, res) {
+    res.render("aboutus.jade");
 });
 
 var server = http.createServer(app).listen(app.get('port'));
