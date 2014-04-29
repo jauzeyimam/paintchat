@@ -271,15 +271,11 @@ var hitOptions = {
 function activateSelectionTool() {
     selectionTool.activate();
 }
-//Problem: selecting a path by stroke doesn't work with emitSelectPath(myPath.position)
-//Selectinag a path by fill doesn't work with emitSelectPath(myPath.firstSegment.point)
-//Selecting a path by stroke doesn't work for point-text objects
-//Selecting a path by fill doesn't work for unfilled objects...
 selectionTool.onMouseDown = function(event) {
     var hitResult = project.hitTest(event.point, hitOptions);
     if (hitResult != myPath && myPath != null && myPath.selected) {
         myPath.selected = false;
-        emitSelectPath(getPoint(myPath));
+        emitDeselectPath();
         myPath = null;
     }
     if (hitResult != null) {
@@ -291,12 +287,13 @@ selectionTool.onMouseDown = function(event) {
         if (notSelected) {
             myPath = hitResult.item;
             myPath.selected = true;
-            if (hitResult.type == 'fill') {
-                emitSelectPath(myPath.position);
-            } else if (hitResult.type == 'stroke') {
-                emitSelectPath(myPath.firstSegment.point);
+            // if (hitResult.type == 'fill') {
+            //     emitSelectPath(myPath.position);
+            // } else if (hitResult.type == 'stroke') {
+            //     emitSelectPath(myPath.firstSegment.point);
 
-            }
+            // }
+            emitSelectPath(event.point);
         }
     }
 }
@@ -370,6 +367,26 @@ selectionTool.onKeyDown = function(event) {
                 emitRemovePath();
                 moveFlag = true;
                 delta = new Point(0, 1);
+            } else if (event.key == '<') {
+                emitChangeLayer(2);
+                myPath.bringToFront();
+                console.log("BringToFront pressed");
+            } else if (event.key == '>') {
+                emitChangeLayer(-2);
+                myPath.sendToBack();
+                console.log("SendToBack pressed");
+            } else if (event.key == ',') {
+                emitChangeLayer(1);
+                if (myPath.nextSibling != null) {
+                    myPath.moveAbove(myPath.nextSibling);
+                }
+                console.log("moveForward pressed");
+            } else if (event.key == '.') {
+                emitChangeLayer(-1);
+                if (myPath.previousSibling != null) {
+                    myPath.moveBelow(myPath.previousSibling);
+                }
+                console.log("moveBack pressed");
             }
             if (moveFlag) {
                 if (myPath.type == 'path') {
@@ -567,6 +584,7 @@ function removePath(user) {
     for (key in lastPaths) {
         if (key == user) {
             lastPaths[key].remove();
+            lastPaths[key] = null;
         }
     }
     view.draw();
@@ -584,13 +602,53 @@ function selectPath(data) {
             hitResult.item.selectedColor = 'red';
             hitResult.item.selected = true;
             view.draw();
-        } else {
-            hitResult.item.selectedColor = project.activeLayer.selectedColor;
-            hitResult.item.selected = false;
-            lastPaths[data.user] = null;
-            view.draw();
         }
     }
+}
+/*-------------selectPath-----------------
+ * Draws a path and updates the lastPaths
+ * array to hold that path in the users
+ * slot
+ */
+function deselectPath(data) {
+    lastPaths[data.user].selectedColor = project.activeLayer.selectedColor;
+    lastPaths[data.user].selected = false;
+    lastPaths[data.user] = null;
+    view.draw();
+}
+
+/*----------changeLayer()------------
+ * tell other users to change the order of
+ * a path, front to back of overlapping paths
+ * index decides what type of movement the
+ * path will undergo
+ * index = 2 bring to very front
+ * index = 1 bring forward one step
+ * index = -1 send back one step
+ * index = -2 send to very back
+ */
+function changeLayer(data) {
+    console.log("changing Layer", data.index);
+    if (data.index == 2) {
+        lastPaths[data.user].bringToFront();
+        console.log(lastPaths[data.user]);
+    } else if (data.index == -2) {
+        lastPaths[data.user].sendToBack();
+        console.log(lastPaths[data.user]);
+    } else if (data.index == 1) {
+        if (lastPaths[data.user].nextSibling != null) {
+            lastPaths[data.user].moveAbove(lastPaths[data.user].nextSibling);
+            console.log(lastPaths[data.user]);
+        }
+    } else if (data.index == -1) {
+        if (lastPaths[data.user].previousSibling != null) {
+            lastPaths[data.user].moveBelow(lastPaths[data.user].previousSibling);
+            console.log(lastPaths[data.user]);
+        }
+    } else {
+        console.log("Error: invalid changeLayer index");
+    }
+    view.draw();
 }
 
 /**********Adding/Removing Users********/
@@ -758,6 +816,43 @@ function emitSelectPath(point) {
     io.emit('selectPath', data, sessionId)
 }
 
+function emitDeselectPath() {
+    var sessionId = io.socket.sessionid;
+    var data = {
+        user: sessionId
+    };
+    io.emit('deselectPath', data, sessionId)
+}
+
+/*----------emitChangeLayer()------------
+ * tell other users to change the order of
+ * a path, front to back of overlapping paths
+ * index decides what type of movement the
+ * path will undergo
+ * index = 2 bring to very front
+ * index = 1 bring forward one step
+ * index = -1 send back one step
+ * index = -2 send to very back
+ */
+function emitChangeLayer(index) {
+    var sessionId = io.socket.sessionid;
+    var data = {
+        user: sessionId,
+        index: index
+    };
+    io.emit('changeLayer', data, sessionId);
+}
+/*---------emitSendToBack()--------------
+ * tell other users to send a path to the
+ * back of the canvas
+ */
+function emitSendToBack() {
+    var sessionId = io.socket.sessionid;
+    var data = {
+        user: sessionId
+    };
+    io.emit('sendToBack', data, sessionId);
+}
 /******Socket.io Code*********/
 io.on('addPoint', function(data) {
     addPoint(data);
@@ -777,6 +872,9 @@ io.on('removePath', function(data) {
 io.on('selectPath', function(data) {
     selectPath(data);
 });
+io.on('deselectPath', function(data) {
+    deselectPath(data);
+});
 io.on('disconnectedUser', function(data) {
     disconnectedUser(data);
 });
@@ -787,7 +885,10 @@ io.on('getProject', function(data) {
 });
 io.on('setProject', function(data) {
     setProject(data);
-})
+});
+io.on('changeLayer', function(data) {
+    changeLayer(data);
+});
 
 /*-------Map Buttons to Functions----------*/
 $(function() {

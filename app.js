@@ -128,7 +128,7 @@ io.sockets.on('connection', function(socket) {
     /*********Chat Functions**********/
     socket.on('message', function(message) {
         if (message == "&#x2F;help") {
-            var helpMessage = "After selecting:<br>User arrow keys or click and drag to move<br>Press 'c' to change line color<br>Press 'f' to toggle fill<br>Press 't' to increase thickness<br>Press 'Shift+T' to decrease thickness<br>Press 'd' to duplicate<br>Press 'Shift+D' or 'Backspace' or 'delete' to delete.";
+            var helpMessage = "After selecting:<br>User arrow keys or click and drag to move<br>Press 'c' to change line color<br>Press 'f' to toggle fill<br>Press 't' to increase thickness<br>Press 'Shift+T' to decrease thickness<br>Press 'd' to duplicate<br>Press 'Shift+D' or 'Backspace' or 'delete' to delete.<br>Press 'Shift+<' to bring to front<br>Press 'Shift+>' to send to back<br>Press ',' to move forward<br>Press '.' to move backward";
             var data = {
                 'message': helpMessage,
                 pseudo: "<b>Server</b>"
@@ -171,5 +171,11 @@ io.sockets.on('connection', function(socket) {
     })
     socket.on('selectPath', function(data, session) {
         socket.broadcast.to(socket.room).emit('selectPath', data);
+    })
+    socket.on('deselectPath', function(data, session) {
+        socket.broadcast.to(socket.room).emit('deselectPath', data);
+    })
+    socket.on('changeLayer', function(data, session) {
+        socket.broadcast.to(socket.room).emit('changeLayer', data);
     })
 });
